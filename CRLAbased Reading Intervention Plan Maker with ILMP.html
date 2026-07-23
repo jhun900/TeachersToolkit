@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRLA Intervention Plan Maker</title>
+    <!-- Tailwind CSS for Modern UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS for Raw Excel Parsing -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <!-- Tesseract.js for Image OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <!-- HTML to DOCX Converter to fix the Word corruption error -->
+    <script src="https://unpkg.com/html-docx-js/dist/html-docx.js"></script>
+    <!-- JSZip for packaging multiple files[cite: 4] -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <style>
+        /* Enforce Century Gothic across the web app */
+        body, input, textarea, button, table {
+            font-family: 'Century Gothic', sans-serif !important;
+        }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #2563eb;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-blue-800 text-white shadow-lg py-5 px-6 md:px-10 flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold">CRLA Reading Intervention Plan Maker</h1>
+            <p class="text-blue-200 text-sm mt-1">AI-Powered Planning based on CRLA School Summaries</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full space-y-8">
+        
+        <!-- Upload Module -->
+        <section class="bg-white rounded-xl shadow-md border border-gray-200 p-6">
+            <h2 class="text-xl font-semibold mb-2 text-gray-700">1. Upload Assessment Data</h2>
+            <p class="text-sm text-gray-500 mb-6">Upload <strong>CRLA3_SchoolSummary_v3d_2.xlsx</strong> or an image/PDF equivalent.</p>
+            
+            <label class="flex flex-col items-center justify-center w-full h-48 border-2 border-blue-300 border-dashed rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100 transition-colors">
+                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg class="w-12 h-12 mb-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    <p class="mb-2 text-sm text-gray-700"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                    <p class="text-xs text-gray-500">XLSX, XLS, JPG, PNG, PDF</p>
+                </div>
+                <input type="file" class="hidden" accept=".xlsx, .xls, .jpg, .jpeg, .png, .pdf" onchange="handleFile(event)" />
+            </label>
+
+            <div id="loading-indicator" class="hidden flex flex-col items-center mt-6 space-y-3">
+                <div class="spinner"></div>
+                <span id="loading-text" class="text-blue-600 font-medium">Extracting data...</span>
+            </div>
+        </section>
+
+        <!-- Dashboard -->
+        <section id="dashboard" class="hidden bg-white rounded-xl shadow-md border border-gray-200 p-6 transition-all">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-700">2. Raw Data Dashboard</h2>
+                    <p class="text-sm text-gray-500">Review the extracted CRLA data before generating the plan.</p>
+                </div>
+                <div class="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
+                    <button onclick="generatePlan('institutional')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all cursor-pointer">
+                        Generate Institutional Plan
+                    </button>
+                    <button onclick="generatePlan('grade-level')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all cursor-pointer">
+                        Generate Grade-Level Plans
+                    </button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto border border-gray-200 rounded-lg max-h-96">
+                <table class="w-full text-sm text-left text-gray-600">
+                    <thead id="data-head" class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0"></thead>
+                    <tbody id="data-body" class="divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+            <textarea id="raw-text-fallback" class="hidden w-full h-40 mt-4 p-3 border rounded-lg text-sm bg-gray-50" readonly></textarea>
+        </section>
+
+        <!-- Generated Plan Preview -->
+        <section id="preview-section" class="hidden bg-white rounded-xl shadow-md border border-gray-200 p-6 transition-all">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-700">3. Intervention Plan Preview</h2>
+                    <p class="text-sm text-gray-500">AI-generated content based on your raw data.</p>
+                </div>
+                <div class="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3 relative z-10">
+                    <!-- New Export ILMP Button -->
+                    <button id="export-ilmp-btn" class="hidden bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all cursor-pointer">
+                        Export ILMP (ZIP)
+                    </button>
+                    <button id="export-btn" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all flex items-center cursor-pointer">
+                        Export Plan
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Institutional Plan UI -->
+            <div id="institutional-preview" class="hidden overflow-x-auto border border-gray-200 rounded-lg">
+                <table id="institutional-table" class="w-full text-sm text-left text-gray-700">
+                    <thead class="text-xs text-white uppercase bg-blue-800">
+                        <tr>
+                            <th class="px-4 py-3">Phases of the Institutionalization</th>
+                            <th class="px-4 py-3">Goals/Objectives</th>
+                            <th class="px-4 py-3 min-w-[200px]">Activities/Strategies</th>
+                            <th class="px-4 py-3">Persons Involved</th>
+                            <th class="px-4 py-3 min-w-[150px]">Resources Needed</th>
+                            <th class="px-4 py-3">Time Frame</th>
+                            <th class="px-4 py-3">Success Indicator</th>
+                        </tr>
+                    </thead>
+                    <tbody id="institutional-body" class="divide-y divide-gray-200 bg-white"></tbody>
+                </table>
+            </div>
+
+            <!-- Grade-Level Plans UI -->
+            <div id="grade-level-preview" class="hidden space-y-10">
+                <!-- Filled dynamically via JS -->
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Use the API key provided from the snippet
+        const MISTRAL_API_KEY = "KEE3cLtsf1S1v9c2Brmtuzb4HAWicNeP"; 
+        
+        let extractedDataString = "";
+        let finalPlanData = [];
+        let finalILMPData = [];
+        let currentPlanType = "";
+        
+        // Setup persistent event listeners for export buttons
+        document.getElementById('export-btn').addEventListener('click', function() {
+            if (currentPlanType === 'institutional') {
+                exportInstitutionalPlan();
+            } else if (currentPlanType === 'grade-level') {
+                exportGradeLevelPlan();
+            }
+        });
+
+        document.getElementById('export-ilmp-btn').addEventListener('click', function() {
+            exportILMP();
+        });
+
+        function parseValue(val, asHtml = false) {
+            if (!val) return "";
+            const lineBreak = asHtml ? "<br>" : "\n";
+            
+            if (Array.isArray(val)) {
+                return val.map(item => {
+                    if (typeof item === 'object') return Object.values(item).join(': ');
+                    return String(item);
+                }).join(lineBreak);
+            }
+            if (typeof val === 'object') {
+                return Object.values(val).join(', ');
+            }
+            return String(val).replace(/\n/g, lineBreak);
+        }
+
+        async function handleFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const filename = file.name.toLowerCase();
+            showLoader("Extracting data from " + file.name + "...");
+            hideSections();
+
+            if (filename.endsWith('.xlsx') || filename.endsWith('.xls')) {
+                processExcel(file);
+            } else if (filename.match(/\.(jpg|jpeg|png)$/)) {
+                await processImage(file);
+            } else if (filename.endsWith('.pdf')) {
+                alert("For PDFs, text parsing is limited without external servers. Uploading Excel is recommended.");
+                extractedDataString = "PDF data processed implicitly. Awaiting plan generation.";
+                showFallbackText(extractedDataString);
+                hideLoader();
+            } else {
+                alert("Unsupported file type.");
+                hideLoader();
+            }
+        }
+
+        function processExcel(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
+                    
+                    extractedDataString = JSON.stringify(jsonData.slice(0, 50)); 
+                    renderTable(jsonData);
+                    hideLoader();
+                } catch (err) {
+                    alert("Error parsing Excel.");
+                    hideLoader();
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        async function processImage(file) {
+            try {
+                const result = await Tesseract.recognize(file, 'eng');
+                extractedDataString = result.data.text;
+                showFallbackText(extractedDataString);
+            } catch (err) {
+                alert("OCR failed.");
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function showLoader(text) {
+            document.getElementById('loading-indicator').classList.remove('hidden');
+            document.getElementById('loading-text').innerText = text;
+        }
+        function hideLoader() {
+            document.getElementById('loading-indicator').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+        }
+        function hideSections() {
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('preview-section').classList.add('hidden');
+            document.getElementById('export-ilmp-btn').classList.add('hidden');
+        }
+        function showFallbackText(text) {
+            const ta = document.getElementById('raw-text-fallback');
+            ta.value = text;
+            ta.classList.remove('hidden');
+        }
+
+        function renderTable(data) {
+            if (!data || data.length === 0) return;
+            const headers = Object.keys(data[0]);
+            let headHTML = '<tr>';
+            headers.forEach(h => headHTML += `<th class="px-4 py-3">${h}</th>`);
+            headHTML += '</tr>';
+            document.getElementById('data-head').innerHTML = headHTML;
+
+            let bodyHTML = '';
+            data.slice(0, 30).forEach(row => {
+                bodyHTML += '<tr class="hover:bg-gray-50">';
+                headers.forEach(h => bodyHTML += `<td class="px-4 py-2">${row[h]}</td>`);
+                bodyHTML += '</tr>';
+            });
+            document.getElementById('data-body').innerHTML = bodyHTML;
+        }
+
+        async function generatePlan(type) {
+            if(!MISTRAL_API_KEY) {
+                alert("⚠️ Please paste your Mistral API Key in the HTML code to generate the plan.");
+                return;
+            }
+
+            currentPlanType = type;
+            document.getElementById('preview-section').classList.add('hidden');
+            document.getElementById('export-ilmp-btn').classList.add('hidden');
+            showLoader(`Generating ${type} plan using Mistral AI...`);
+
+            let prompt = "";
+            if (type === 'institutional') {
+                prompt = `You are an expert reading intervention coordinator. Based on this CRLA data: ${extractedDataString}.
+Create an Institutional Reading Intervention Plan. 
+Output STRICTLY as a JSON array of objects. Do not use Markdown wrapping (no \`\`\`json).
+Keys must exactly match: "Phase", "GoalsObjectives", "ActivitiesStrategies", "PersonsInvolved", "ResourcesNeeded", "TimeFrame", "SuccessIndicator". 
+ALL values inside the objects MUST be single strings, do NOT use arrays or nested objects as values. Combine multiple items using new lines within the string.`;
+            } else {
+                prompt = `You are an expert reading intervention coordinator. Based on this CRLA data: ${extractedDataString}.
+Create detailed Grade-Level Intervention Plans. Identify the distinct grades from the data and create a specific plan for each.
+Output STRICTLY as a JSON array of objects. Do not use Markdown wrapping (no \`\`\`json).
+Each object MUST represent a grade and have exactly this structure:
+{
+  "Grade": "e.g., Grade 1",
+  "Rationale": "Text rationale based on data.",
+  "Objectives": "Text objectives.",
+  "Title": "Intervention Title.",
+  "ActionPlan": [
+    {"Activities": "...", "Timeline": "...", "ResourceNeeded": "...", "ExpectedOutput": "...", "MentoringSchedule": "..."}
+  ],
+  "MonitoringPlan": [
+    {"MonitoringTool": "...", "Timeline": "...", "ResponsiblePerson": "..."}
+  ]
+}
+Ensure all keys are strings. Include 2-3 rows in ActionPlan and MonitoringPlan arrays per grade.`;
+            }
+
+            try {
+                const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${MISTRAL_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: 'mistral-large-latest',
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.7
+                    })
+                });
+
+                if (!response.ok) throw new Error("API request failed");
+                const result = await response.json();
+                
+                let cleanJsonString = result.choices[0].message.content.trim();
+                if (cleanJsonString.startsWith("```json")) cleanJsonString = cleanJsonString.replace(/^```json/, '').replace(/```$/, '');
+                if (cleanJsonString.startsWith("```")) cleanJsonString = cleanJsonString.replace(/^```/, '').replace(/```$/, '');
+
+                finalPlanData = JSON.parse(cleanJsonString);
+                const exportBtn = document.getElementById('export-btn');
+
+                if (type === 'institutional') {
+                    renderInstitutionalPlan(finalPlanData);
+                    exportBtn.innerText = "Export Plan to Word (.docx)";
+                    
+                    // Trigger ILMP Generation Automatically
+                    await generateILMPData();
+                } else {
+                    renderGradeLevelPlan(finalPlanData);
+                    exportBtn.innerText = "Export Plans to Word (.docx)";
+                    hideLoader();
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Failed to generate plan. Ensure API key is valid and output was standard JSON.");
+                hideLoader();
+            } 
+        }
+
+        async function generateILMPData() {
+            showLoader("Targeting learners and generating ILMPs based on data counts...");
+            
+            const ilmpPrompt = `You are an expert reading intervention coordinator. Carefully analyze the provided CRLA reading data: ${extractedDataString}.
+Calculate the exact number of learners needing interventions by grade level and reading profile (e.g., Frustration, Instructional, Refresher). 
+
+Your task: Generate an Individual Learning Monitoring Plan (ILMP) for EACH distinct learner based on these numbers. 
+For example, if Grade 1 has 4 learners in 'Frustration', you must generate exactly 4 distinct learner profile objects for Grade 1. Provide this for all grades.
+
+Make the content highly specific, content-aware, and aligned with targeted interventions addressing their specific phonological or reading needs. Make up realistic unique names for every single generated learner.
+
+Output STRICTLY as a JSON array of objects. Do not use Markdown wrapping (no \`\`\`json).
+Each object MUST have exactly these keys (all values as strings):
+"LearnerName",
+"GradeLevel",
+"ReadingLevel",
+"LearningArea" (e.g., Reading / Literacy),
+"LearnersNeeds" (Highly specific needs),
+"InterventionStrategies" (Targeted, content-aware strategies),
+"MonitoringDate".`;
+
+            try {
+                const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${MISTRAL_API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: 'mistral-large-latest',
+                        messages: [{ role: 'user', content: ilmpPrompt }],
+                        temperature: 0.7
+                    })
+                });
+
+                if (!response.ok) throw new Error("ILMP API request failed");
+                const result = await response.json();
+                
+                let cleanJsonString = result.choices[0].message.content.trim();
+                if (cleanJsonString.startsWith("```json")) cleanJsonString = cleanJsonString.replace(/^```json/, '').replace(/```$/, '');
+                if (cleanJsonString.startsWith("```")) cleanJsonString = cleanJsonString.replace(/^```/, '').replace(/```$/, '');
+
+                finalILMPData = JSON.parse(cleanJsonString);
+                
+                // Show the Export ILMP Button once complete
+                document.getElementById('export-ilmp-btn').classList.remove('hidden');
+
+            } catch (error) {
+                console.error("ILMP Generation Error: ", error);
+            } finally {
+                hideLoader();
+            }
+        }
+
+        function renderInstitutionalPlan(planData) {
+            document.getElementById('grade-level-preview').classList.add('hidden');
+            document.getElementById('institutional-preview').classList.remove('hidden');
+            
+            const tbody = document.getElementById('institutional-body');
+            tbody.innerHTML = '';
+            planData.forEach(row => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-blue-50 transition-colors">
+                        <td class="px-4 py-4 font-semibold">${parseValue(row.Phase, true)}</td>
+                        <td class="px-4 py-4">${parseValue(row.GoalsObjectives, true)}</td>
+                        <td class="px-4 py-4 whitespace-pre-line">${parseValue(row.ActivitiesStrategies, true)}</td>
+                        <td class="px-4 py-4">${parseValue(row.PersonsInvolved, true)}</td>
+                        <td class="px-4 py-4">${parseValue(row.ResourcesNeeded, true)}</td>
+                        <td class="px-4 py-4">${parseValue(row.TimeFrame, true)}</td>
+                        <td class="px-4 py-4 text-green-700 font-medium">${parseValue(row.SuccessIndicator, true)}</td>
+                    </tr>`;
+            });
+            document.getElementById('preview-section').classList.remove('hidden');
+            document.getElementById('preview-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function renderGradeLevelPlan(planData) {
+            document.getElementById('institutional-preview').classList.add('hidden');
+            const container = document.getElementById('grade-level-preview');
+            container.innerHTML = '';
+            container.classList.remove('hidden');
+
+            planData.forEach(gradePlan => {
+                let actionRows = (gradePlan.ActionPlan || []).map(ap => `
+                    <tr class="bg-white border-b hover:bg-gray-50">
+                        <td class="px-4 py-3">${parseValue(ap.Activities, true)}</td>
+                        <td class="px-4 py-3">${parseValue(ap.Timeline, true)}</td>
+                        <td class="px-4 py-3">${parseValue(ap.ResourceNeeded, true)}</td>
+                        <td class="px-4 py-3">${parseValue(ap.ExpectedOutput, true)}</td>
+                        <td class="px-4 py-3">${parseValue(ap.MentoringSchedule, true)}</td>
+                    </tr>
+                `).join('');
+
+                let monitoringRows = (gradePlan.MonitoringPlan || []).map(mp => `
+                    <tr class="bg-white border-b hover:bg-gray-50">
+                        <td class="px-4 py-3">${parseValue(mp.MonitoringTool, true)}</td>
+                        <td class="px-4 py-3">${parseValue(mp.Timeline, true)}</td>
+                        <td class="px-4 py-3">${parseValue(mp.ResponsiblePerson, true)}</td>
+                    </tr>
+                `).join('');
+
+                container.innerHTML += `
+                    <div class="border border-indigo-200 rounded-lg p-6 bg-indigo-50/30">
+                        <h3 class="text-2xl font-bold text-indigo-900 mb-4">${parseValue(gradePlan.Grade)}</h3>
+                        <div class="mb-4"><strong class="text-gray-800">I. Rationale:</strong> <p class="text-gray-600 mt-1">${parseValue(gradePlan.Rationale)}</p></div>
+                        <div class="mb-4"><strong class="text-gray-800">II. Objectives:</strong> <p class="text-gray-600 mt-1">${parseValue(gradePlan.Objectives)}</p></div>
+                        <div class="mb-6"><strong class="text-gray-800">III. Title of Intervention:</strong> <p class="text-gray-600 mt-1">${parseValue(gradePlan.Title)}</p></div>
+                        
+                        <div class="mb-6">
+                            <strong class="text-gray-800 block mb-2">IV. Action Plan</strong>
+                            <div class="overflow-x-auto border rounded shadow-sm">
+                                <table class="w-full text-sm text-left border-collapse">
+                                    <thead class="text-xs text-white uppercase bg-indigo-700">
+                                        <tr><th class="px-4 py-3">Activities</th><th class="px-4 py-3">Timeline</th><th class="px-4 py-3">Resource Needed</th><th class="px-4 py-3">Expected Output</th><th class="px-4 py-3">Mentoring Schedule</th></tr>
+                                    </thead>
+                                    <tbody>${actionRows}</tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div>
+                            <strong class="text-gray-800 block mb-2">V. Monitoring and Evaluation Plan</strong>
+                            <div class="overflow-x-auto border rounded shadow-sm">
+                                <table class="w-full text-sm text-left border-collapse">
+                                    <thead class="text-xs text-white uppercase bg-indigo-700">
+                                        <tr><th class="px-4 py-3">Monitoring Tool/Method</th><th class="px-4 py-3">Timeline</th><th class="px-4 py-3">Responsible Person</th></tr>
+                                    </thead>
+                                    <tbody>${monitoringRows}</tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('preview-section').classList.remove('hidden');
+            document.getElementById('preview-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ---- EXPORT ILMP as a ZIP file containing individual DOCX files based on source template ----
+        function exportILMP() {
+            if (!finalILMPData || finalILMPData.length === 0) {
+                alert("No ILMP data generated yet.");
+                return;
+            }
+            if (typeof htmlDocx === 'undefined' || typeof JSZip === 'undefined') {
+                alert("Required libraries failed to load. Check your internet connection.");
+                return;
+            }
+
+            const zip = new JSZip();
+            const folder = zip.folder("Targeted_ILMP_Plans");
+
+            finalILMPData.forEach((learner) => {
+                // Formatting based heavily on source template[cite: 5]
+                let htmlString = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <style>
+                        body { font-family: 'Century Gothic', sans-serif; font-size: 11pt; }
+                        .header-title { text-align: center; font-weight: bold; font-size: 14pt; margin-bottom: 20px; text-transform: uppercase; }
+                        p { margin: 5px 0; }
+                        table { border-collapse: collapse; width: 100%; margin-top: 15px; margin-bottom: 15px; }
+                        th, td { border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; }
+                        th { font-weight: bold; }
+                        .no-border-table { border: none; width: 100%; margin-top: 40px; }
+                        .no-border-table td { border: none; text-align: left; padding: 0; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header-title">INDIVIDUAL LEARNING MONITORING PLAN</div>
+                    <p><strong>Learner’s Name:</strong> ${parseValue(learner.LearnerName)}</p>
+                    <p><strong>Grade Level:</strong> ${parseValue(learner.GradeLevel)}</p>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2" width="15%">Learning Area</th>
+                                <th rowspan="2" width="20%">Learner’s Need/s</th>
+                                <th rowspan="2" width="25%">Intervention Strategies Provided</th>
+                                <th rowspan="2" width="15%">Monitoring Date</th>
+                                <th colspan="3" width="25%">Learner’s Status</th>
+                            </tr>
+                            <tr>
+                                <th>Insignificant Progress</th>
+                                <th>Significant Progress</th>
+                                <th>Mastery</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${parseValue(learner.LearningArea, true) || 'Reading'}</td>
+                                <td>${parseValue(learner.LearnersNeeds, true)}</td>
+                                <td>${parseValue(learner.InterventionStrategies, true)}</td>
+                                <td>${parseValue(learner.MonitoringDate, true)}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td colspan="7" style="text-align: left; font-weight: bold; border-top: 2px solid #000;">
+                                    Intervention Status
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <table class="no-border-table">
+                        <tr>
+                            <td>Prepared by: ________________________</td>
+                            <td>Noted: ________________________</td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
+                `;
+
+                // Convert HTML string to DOCX Blob[cite: 4]
+                const docxBlob = htmlDocx.asBlob(htmlString, { orientation: 'portrait' });
+                
+                // Sanitize filename parts to prevent file system errors
+                const safeName = parseValue(learner.LearnerName).replace(/[^a-z0-9]/gi, '_');
+                const safeGrade = parseValue(learner.GradeLevel).replace(/[^a-z0-9]/gi, '_');
+                const safeLevel = parseValue(learner.ReadingLevel).replace(/[^a-z0-9]/gi, '_');
+                
+                const filename = `ILMP_${safeGrade}_${safeLevel}_${safeName}.docx`;
+                
+                // Add the blob to the ZIP archive[cite: 4]
+                folder.file(filename, docxBlob);
+            });
+
+            // Generate ZIP and trigger download
+            zip.generateAsync({ type: "blob" }).then(function(content) {
+                const url = URL.createObjectURL(content);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'Targeted_ILMP_Plans.zip';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+
+        // ---- EXPORT TO TRUE .DOCX (Institutional Format - Landscape) ----
+        function exportInstitutionalPlan() {
+            if (!finalPlanData || finalPlanData.length === 0) return;
+            if (typeof htmlDocx === 'undefined') {
+                alert("DOCX converter library failed to load. Check your internet connection.");
+                return;
+            }
+
+            let htmlString = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    body { font-family: 'Century Gothic', sans-serif; }
+                    h2 { text-align: left; color: #1e40af; }
+                    table { border-collapse: collapse; width: 100%; margin-top: 15px; }
+                    th { background-color: #1e40af; color: #ffffff; padding: 8px; font-weight: bold; border: 1px solid #000; text-align: left; }
+                    td { padding: 8px; border: 1px solid #000; vertical-align: top; }
+                </style>
+            </head>
+            <body>
+                <h2>ACTION PLAN ON READING INTERVENTION FOR STRUGGLING READERS</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="15%">Phases of the Institutionalization</th>
+                            <th width="15%">Goals/Objectives</th>
+                            <th width="20%">Activities/Strategies</th>
+                            <th width="10%">Persons Involved</th>
+                            <th width="15%">Resources Needed</th>
+                            <th width="10%">Time Frame</th>
+                            <th width="15%">Success Indicator</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            finalPlanData.forEach(row => {
+                htmlString += `
+                    <tr>
+                        <td>${parseValue(row.Phase, true)}</td>
+                        <td>${parseValue(row.GoalsObjectives, true)}</td>
+                        <td>${parseValue(row.ActivitiesStrategies, true)}</td>
+                        <td>${parseValue(row.PersonsInvolved, true)}</td>
+                        <td>${parseValue(row.ResourcesNeeded, true)}</td>
+                        <td>${parseValue(row.TimeFrame, true)}</td>
+                        <td>${parseValue(row.SuccessIndicator, true)}</td>
+                    </tr>`;
+            });
+            htmlString += `</tbody></table></body></html>`;
+
+            // Use htmlDocx to convert raw HTML into a properly compressed XML/DOCX blob[cite: 4]
+            const blob = htmlDocx.asBlob(htmlString, { orientation: 'landscape' });
+            
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Institutional_Reading_Intervention_Plan.docx';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // ---- EXPORT TO TRUE .DOCX (Grade Level Format - Portrait) ----
+        function exportGradeLevelPlan() {
+            if (!finalPlanData || finalPlanData.length === 0) return;
+            if (typeof htmlDocx === 'undefined') {
+                alert("DOCX converter library failed to load. Check your internet connection.");
+                return;
+            }
+
+            let htmlString = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    body { font-family: 'Century Gothic', sans-serif; font-size: 11pt; }
+                    h2 { color: #1e3a8a; text-align: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 5px; }
+                    h3 { color: #3730a3; margin-top: 15px; margin-bottom: 5px; font-size: 14pt; }
+                    p { margin-top: 5px; margin-bottom: 15px; }
+                    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+                    th { background-color: #4f46e5; color: white; padding: 8px; border: 1px solid #000; text-align: left; }
+                    td { padding: 8px; border: 1px solid #000; vertical-align: top; }
+                    .page-break { page-break-before: always; }
+                    .section-title { font-weight: bold; font-size: 12pt; margin-top: 20px; }
+                </style>
+            </head>
+            <body>
+            `;
+
+            finalPlanData.forEach((gradePlan, index) => {
+                if (index > 0) htmlString += `<div class="page-break"></div>`;
+                
+                htmlString += `<h2>Individual / Grade-Level Intervention Plan: ${parseValue(gradePlan.Grade)}</h2>`;
+                
+                htmlString += `<div class="section-title">I. Rationale:</div><p>${parseValue(gradePlan.Rationale)}</p>`;
+                htmlString += `<div class="section-title">II. Objectives:</div><p>${parseValue(gradePlan.Objectives)}</p>`;
+                htmlString += `<div class="section-title">III. Title of Intervention:</div><p>${parseValue(gradePlan.Title)}</p>`;
+                
+                // Action Plan Table
+                htmlString += `<div class="section-title">IV. Action Plan</div>`;
+                htmlString += `<table>
+                    <thead>
+                        <tr>
+                            <th width="30%">Activities</th>
+                            <th width="15%">Timeline</th>
+                            <th width="20%">Resource Needed</th>
+                            <th width="20%">Expected Output</th>
+                            <th width="15%">Mentoring Schedule</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+                (gradePlan.ActionPlan || []).forEach(ap => {
+                    htmlString += `<tr>
+                        <td>${parseValue(ap.Activities, true)}</td>
+                        <td>${parseValue(ap.Timeline, true)}</td>
+                        <td>${parseValue(ap.ResourceNeeded, true)}</td>
+                        <td>${parseValue(ap.ExpectedOutput, true)}</td>
+                        <td>${parseValue(ap.MentoringSchedule, true)}</td>
+                    </tr>`;
+                });
+                htmlString += `</tbody></table>`;
+
+                // Monitoring Plan Table
+                htmlString += `<div class="section-title">V. Monitoring and Evaluation Plan</div>`;
+                htmlString += `<table>
+                    <thead>
+                        <tr>
+                            <th width="40%">Monitoring Tool/Method</th>
+                            <th width="30%">Timeline</th>
+                            <th width="30%">Responsible Person</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+                (gradePlan.MonitoringPlan || []).forEach(mp => {
+                    htmlString += `<tr>
+                        <td>${parseValue(mp.MonitoringTool, true)}</td>
+                        <td>${parseValue(mp.Timeline, true)}</td>
+                        <td>${parseValue(mp.ResponsiblePerson, true)}</td>
+                    </tr>`;
+                });
+                htmlString += `</tbody></table>`;
+            });
+
+            htmlString += `</body></html>`;
+
+            const blob = htmlDocx.asBlob(htmlString, { orientation: 'portrait' });
+            
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'GradeLevel_Intervention_Plans.docx';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

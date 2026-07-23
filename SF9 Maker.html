@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DepEd SF9 Progress Report Card Generator</title>
+    <!-- Tailwind CSS CDN for modern responsive UI -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS for Excel File Parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- JSZip for Zip File Packaging -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 pb-12">
+
+    <!-- Header / Navbar -->
+    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-400 p-2 rounded-lg text-blue-900 font-extrabold text-xl shadow">
+                    SF9
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">DepEd SF9 Report Card Generator</h1>
+                    <p class="text-xs text-blue-200">Automated Learner Data Mapping from SF1</p>
+                </div>
+            </div>
+            <div class="text-xs bg-blue-800 px-3 py-1.5 rounded-full border border-blue-700 text-blue-200">
+                <i class="fa-solid fa-shield-halved mr-1.5 text-amber-400"></i>100% Client-Side & Secure
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-6">
+
+        <!-- Controls & Upload Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Step 1: Upload SF1 -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center space-x-2 text-blue-900 font-semibold mb-3">
+                        <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs flex items-center justify-center font-bold">1</span>
+                        <h2>Upload DepEd SF1 (.xls / .xlsx)</h2>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-4">Select the official School Form 1 (School Register) exported from LIS.</p>
+                </div>
+                
+                <label for="sf1File" class="relative border-2 border-dashed border-blue-300 rounded-xl p-6 text-center hover:bg-blue-50/50 hover:border-blue-500 transition-all cursor-pointer block">
+                    <input type="file" id="sf1File" accept=".xls,.xlsx" class="hidden" onchange="handleFileUpload(event)">
+                    <i class="fa-solid fa-file-excel text-4xl text-emerald-600 mb-2"></i>
+                    <p class="text-sm font-medium text-slate-700" id="uploadLabel">Click or Drag & Drop SF1 File</p>
+                    <p class="text-xs text-slate-400 mt-1">Supports DepEd SF1 format</p>
+                </label>
+            </div>
+
+            <!-- Step 2: Select SF9 Format -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center space-x-2 text-blue-900 font-semibold mb-3">
+                        <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs flex items-center justify-center font-bold">2</span>
+                        <h2>Select Report Card Type</h2>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-4">Choose the template required for your grade level.</p>
+                </div>
+
+                <div class="space-y-3">
+                    <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">SF9 Output Format</label>
+                    <select id="sf9Type" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+                        <option value="1-3">SF9 for Grades 1 - 3 (A4 Portrait)</option>
+                        <option value="4-12" selected>SF9 for Grades 4 - 12 (A4 Landscape)</option>
+                    </select>
+                    <div id="formatBadge" class="text-xs p-2.5 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-amber-600"></i>
+                        <span id="formatNotice">Generates A4 Landscape Word (.doc) layout packed inside ZIP.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Export Action -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center space-x-2 text-blue-900 font-semibold mb-3">
+                        <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs flex items-center justify-center font-bold">3</span>
+                        <h2>Export Batch SF9 Cards</h2>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-4">Generates individual Word documents (.doc) for each learner packed in a single ZIP file.</p>
+                </div>
+
+                <button id="exportBtn" disabled onclick="exportBatchSF9()" class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-zipper text-lg"></i>
+                    <span>Export SF9 Zip Package</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Class Summary Metadata Header -->
+        <div id="summaryCard" class="hidden bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-center">
+                <div class="p-3 bg-slate-50 rounded-xl">
+                    <p class="text-xs text-slate-500 font-medium">School Name</p>
+                    <p class="text-sm font-bold text-slate-800 truncate" id="metaSchool">-</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl">
+                    <p class="text-xs text-slate-500 font-medium">School Year</p>
+                    <p class="text-sm font-bold text-slate-800 truncate" id="metaSY">-</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl">
+                    <p class="text-xs text-slate-500 font-medium">Grade Level</p>
+                    <p class="text-sm font-bold text-slate-800 truncate" id="metaGrade">-</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl">
+                    <p class="text-xs text-slate-500 font-medium">Section</p>
+                    <p class="text-sm font-bold text-slate-800 truncate" id="metaSection">-</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl">
+                    <p class="text-xs text-slate-500 font-medium">District / Division</p>
+                    <p class="text-sm font-bold text-slate-800 truncate" id="metaDistrictDiv">-</p>
+                </div>
+                <div class="p-3 bg-blue-50 rounded-xl border border-blue-100">
+                    <p class="text-xs text-blue-600 font-medium">Total Learners</p>
+                    <p class="text-sm font-bold text-blue-900" id="metaTotal">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learners Table Dashboard -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-lg">Mapped Learner Roster</h3>
+                    <p class="text-xs text-slate-500">Auto-extracted LRN, Name, Grade, Section, Age, and Sex details per learner.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="learnerCountTag" class="text-xs bg-slate-100 text-slate-600 px-3 py-1.5 rounded-full font-medium">No file loaded</span>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-600">
+                    <thead class="bg-slate-50 text-slate-700 uppercase text-xs tracking-wider border-b border-slate-200">
+                        <tr>
+                            <th class="py-3.5 px-4 font-semibold">#</th>
+                            <th class="py-3.5 px-4 font-semibold">LRN</th>
+                            <th class="py-3.5 px-4 font-semibold">Learner Name</th>
+                            <th class="py-3.5 px-4 font-semibold">Grade</th>
+                            <th class="py-3.5 px-4 font-semibold">Section</th>
+                            <th class="py-3.5 px-4 font-semibold">Sex</th>
+                            <th class="py-3.5 px-4 font-semibold">Age</th>
+                            <th class="py-3.5 px-4 font-semibold text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="learnersTableBody" class="divide-y divide-slate-200">
+                        <tr>
+                            <td colspan="8" class="text-center py-12 text-slate-400">
+                                <i class="fa-solid fa-folder-open text-4xl mb-3 block text-slate-300"></i>
+                                Please upload a DepEd SF1 excel file to preview and generate report cards.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Preview -->
+    <div id="previewModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-slate-800 text-base" id="modalTitle">SF9 Document Preview</h3>
+                <button onclick="closePreviewModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto bg-slate-100 flex-1" id="modalBody">
+                <!-- Html document preview rendered here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        let parsedLearners = [];
+        let classMetadata = {
+            schoolName: '',
+            schoolYear: '',
+            gradeLevel: '',
+            section: '',
+            region: '',
+            division: '',
+            district: ''
+        };
+
+        document.getElementById('sf9Type').addEventListener('change', function() {
+            const val = this.value;
+            const notice = document.getElementById('formatNotice');
+            if (val === '1-3') {
+                notice.innerText = "Generates A4 Portrait Word (.doc) layout packed inside ZIP.";
+            } else {
+                notice.innerText = "Generates A4 Landscape Word (.doc) layout packed inside ZIP.";
+            }
+        });
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('uploadLabel').innerText = file.name;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    // Parse first sheet
+                    const firstSheetName = workbook.SheetNames[0];
+                    const sheet = workbook.Sheets[firstSheetName];
+                    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+                    parseSF1Data(rows);
+                } catch (err) {
+                    alert('Error reading Excel file: ' + err.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function parseSF1Data(rows) {
+            classMetadata = {
+                schoolName: '',
+                schoolYear: '',
+                gradeLevel: '',
+                section: '',
+                region: '',
+                division: '',
+                district: ''
+            };
+            parsedLearners = [];
+
+            // 1. Extract Header Metadata (Scan first 15 rows)
+            for (let r = 0; r < Math.min(15, rows.length); r++) {
+                const row = rows[r] || [];
+                for (let c = 0; c < row.length; c++) {
+                    const val = String(row[c] || '').trim();
+                    if (!val) continue;
+                    const valLower = val.toLowerCase();
+
+                    if (valLower.includes('grade level')) {
+                        classMetadata.gradeLevel = findNextNonEmpty(row, c + 1);
+                    } else if (valLower.includes('section')) {
+                        classMetadata.section = findNextNonEmpty(row, c + 1);
+                    } else if (valLower.includes('school name')) {
+                        classMetadata.schoolName = findNextNonEmpty(row, c + 1);
+                    } else if (valLower.includes('school year')) {
+                        classMetadata.schoolYear = findNextNonEmpty(row, c + 1);
+                    } else if (valLower.includes('region')) {
+                        classMetadata.region = findNextNonEmpty(row, c + 1);
+                    } else if (valLower.includes('division')) {
+                        classMetadata.division = findNextNonEmpty(row, c + 1);
+                    } else if (valLower.includes('district')) {
+                        classMetadata.district = findNextNonEmpty(row, c + 1);
+                    }
+                }
+            }
+
+            // 2. Identify Column Indices for Learner Details with strict exclusion of parent/guardian names
+            let lrnCol = 0;
+            let nameCol = 2;
+            let sexCol = 6;
+            let ageCol = 9;
+
+            for (let r = 0; r < Math.min(15, rows.length); r++) {
+                const row = rows[r] || [];
+                for (let c = 0; c < row.length; c++) {
+                    const val = String(row[c] || '').trim().toLowerCase();
+                    if (val === 'lrn') {
+                        lrnCol = c;
+                    } else if (val.includes('name') && (val.includes('last') || val.includes('(last')) && !val.includes('mother') && !val.includes('father') && !val.includes('guardian') && !val.includes('parent')) {
+                        nameCol = c;
+                    } else if (val === 'sex' || val.includes('sex ')) {
+                        sexCol = c;
+                    } else if (val === 'age' || val.startsWith('age ')) {
+                        ageCol = c;
+                    }
+                }
+            }
+
+            // 3. Extract Individual Learner Records
+            let currentSex = 'M';
+            for (let r = 0; r < rows.length; r++) {
+                const row = rows[r] || [];
+                const rowStr = row.map(cell => String(cell || '').toLowerCase()).join(' ');
+
+                if (rowStr.includes('total male')) {
+                    currentSex = 'F';
+                    continue;
+                }
+                if (rowStr.includes('total female') || rowStr.includes('combined') || rowStr.includes('list and code of indicators')) {
+                    continue;
+                }
+
+                const lrnVal = String(row[lrnCol] || '').trim();
+                // Check if LRN is 10 to 13 digits
+                if (/^\d{10,13}$/.test(lrnVal)) {
+                    let nameVal = String(row[nameCol] || '').trim();
+                    let sexVal = String(row[sexCol] || '').trim().toUpperCase();
+                    if (!['M', 'F', 'MALE', 'FEMALE'].includes(sexVal)) {
+                        sexVal = currentSex;
+                    } else {
+                        sexVal = sexVal.startsWith('M') ? 'M' : 'F';
+                    }
+
+                    let ageVal = String(row[ageCol] || '').trim();
+                    if (!/^\d+$/.test(ageVal) || parseInt(ageVal) < 3 || parseInt(ageVal) > 30) {
+                        // Look in neighboring columns for a valid age digit
+                        for (let offset of [-1, 1, -2, 2, 3, -3]) {
+                            const idx = ageCol + offset;
+                            if (idx >= 0 && idx < row.length) {
+                                const tryVal = String(row[idx] || '').trim();
+                                if (/^\d+$/.test(tryVal) && parseInt(tryVal) >= 3 && parseInt(tryVal) <= 30) {
+                                    ageVal = tryVal;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    parsedLearners.push({
+                        lrn: lrnVal,
+                        name: cleanName(nameVal),
+                        sex: sexVal,
+                        age: ageVal !== 'nan' ? ageVal : '',
+                        grade: classMetadata.gradeLevel || 'Grade',
+                        section: classMetadata.section || ''
+                    });
+                }
+            }
+
+            updateDashboardUI();
+        }
+
+        function findNextNonEmpty(row, startIdx) {
+            for (let i = startIdx; i < Math.min(startIdx + 10, row.length); i++) {
+                const val = String(row[i] || '').trim();
+                if (val && val !== 'nan') return val;
+            }
+            return '';
+        }
+
+        function cleanName(str) {
+            if (!str) return '';
+            return str.replace(/\s+/g, ' ').trim();
+        }
+
+        function updateDashboardUI() {
+            // Update Summary Stats
+            document.getElementById('summaryCard').classList.remove('hidden');
+            document.getElementById('metaSchool').innerText = classMetadata.schoolName || 'N/A';
+            document.getElementById('metaSY').innerText = classMetadata.schoolYear || 'N/A';
+            document.getElementById('metaGrade').innerText = classMetadata.gradeLevel || 'N/A';
+            document.getElementById('metaSection').innerText = classMetadata.section || 'N/A';
+            document.getElementById('metaDistrictDiv').innerText = (classMetadata.district || classMetadata.division) ? `${classMetadata.district} / ${classMetadata.division}` : 'N/A';
+            document.getElementById('metaTotal').innerText = parsedLearners.length;
+
+            document.getElementById('learnerCountTag').innerText = `${parsedLearners.length} Learners Loaded`;
+            document.getElementById('exportBtn').disabled = parsedLearners.length === 0;
+
+            // Auto select SF9 type based on Grade Level if detected
+            if (classMetadata.gradeLevel) {
+                const gNum = parseInt(classMetadata.gradeLevel.replace(/\D/g, ''));
+                if (gNum >= 1 && gNum <= 3) {
+                    document.getElementById('sf9Type').value = '1-3';
+                    document.getElementById('formatNotice').innerText = "Generates A4 Portrait Word (.doc) layout packed inside ZIP.";
+                } else if (gNum >= 4) {
+                    document.getElementById('sf9Type').value = '4-12';
+                    document.getElementById('formatNotice').innerText = "Generates A4 Landscape Word (.doc) layout packed inside ZIP.";
+                }
+            }
+
+            // Populate Table
+            const tbody = document.getElementById('learnersTableBody');
+            if (parsedLearners.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center py-12 text-slate-400">
+                            No learners found in the uploaded file. Please check if it's a standard DepEd SF1 format.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = parsedLearners.map((l, index) => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="py-3 px-4 text-xs font-bold text-slate-400">${index + 1}</td>
+                    <td class="py-3 px-4 font-mono text-xs font-semibold text-blue-900">${l.lrn}</td>
+                    <td class="py-3 px-4 font-semibold text-slate-800">${l.name}</td>
+                    <td class="py-3 px-4 text-xs">${l.grade}</td>
+                    <td class="py-3 px-4 text-xs">${l.section}</td>
+                    <td class="py-3 px-4 text-xs">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${l.sex === 'M' ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700'}">
+                            ${l.sex}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-xs">${l.age || '-'}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="previewLearnerSF9(${index})" class="px-2.5 py-1 text-xs bg-slate-100 hover:bg-blue-50 text-blue-700 font-medium rounded-lg border border-slate-200 transition-colors">
+                            <i class="fa-regular fa-eye mr-1"></i> Preview
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Generate HTML Document String for SF9 Grade 1-3
+        function generateSF9_Grade1_3(learner) {
+            return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="UTF-8">
+<title>Learner's Progress Report (Grade 1 - 3)</title>
+<style>
+@page { size: A4 portrait; margin: 1.2cm; mso-header-margin:36.0pt; mso-footer-margin:36.0pt; }
+body { font-family: "Arial", sans-serif; font-size: 8pt; line-height: 1.2; color: #000000; }
+h2 { text-align: center; font-size: 11pt; font-weight: bold; margin: 4px 0; }
+h3 { font-size: 9pt; font-weight: bold; margin: 4px 0 2px; }
+p { margin: 0 0 3px 0; }
+table { border-collapse: collapse; width: 100%; margin: 2px 0; font-size: 7.5pt; }
+th, td { border: 1px solid #000000; padding: 2px 3px; vertical-align: top; }
+.text-center { text-align: center; }
+.text-justify { text-align: justify; }
+.bold { font-weight: bold; }
+.underlined { text-decoration: underline; font-weight: bold; }
+.term-box { border: 1px solid #000000; padding: 4px; margin-bottom: 5px; }
+.term-title { font-weight: bold; font-size: 7.5pt; margin-top: 3px; }
+.term-val { min-height:24px; font-size: 7.5pt; color: #111; margin-bottom: 4px; padding-left: 2px; }
+</style>
+</head>
+<body>
+<p class="text-center" style="font-size: 8.5pt;">
+Republic of the Philippines<br>
+<span class="bold">Department of Education</span><br>
+Region: <span class="underlined">${classMetadata.region || '_________________'}</span><br>
+<span class="bold">SCHOOLS DIVISION OFFICE OF ${classMetadata.division ? classMetadata.division.toUpperCase() : '_________________'}</span><br>
+District: <span class="underlined">${classMetadata.district || '_________________'}</span><br>
+Municipality/City, Province: <span class="underlined">________________________</span><br>
+School: <span class="underlined">${classMetadata.schoolName || '________________________'}</span>
+</p>
+<h2>LEARNER'S PROGRESS REPORT (GRADE 1 - 3)</h2>
+<p class="text-center" style="font-size: 8.5pt;"><span class="bold">School Year:</span> <span class="underlined">${classMetadata.schoolYear || '__________'}</span></p>
+
+<table style="width:100%; border:none; margin: 4px 0;">
+  <tr style="border:none;">
+    <td style="border:none; width:50%; padding:1px;"><span class="bold">LRN:</span> <span class="underlined">${learner.lrn}</span></td>
+    <td style="border:none; width:50%; padding:1px;"><span class="bold">Name:</span> <span class="underlined">${learner.name}</span></td>
+  </tr>
+  <tr style="border:none;">
+    <td style="border:none; padding:1px;"><span class="bold">Grade & Section:</span> <span class="underlined">${learner.grade} - ${learner.section}</span></td>
+    <td style="border:none; padding:1px;"><span class="bold">Address:</span> <span class="underlined">_______________________________________</span></td>
+  </tr>
+  <tr style="border:none;">
+    <td style="border:none; padding:1px;" colspan="2"><span class="bold">Sex:</span> <span class="underlined">${learner.sex}</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="bold">Age:</span> <span class="underlined">${learner.age}</span></td>
+  </tr>
+</table>
+
+<p><br><span class="bold" style="font-size: 8.5pt;">Dear Parents/Guardians,</span></p>
+<p class="text-justify" style="font-size: 7.5pt;">This report provides a descriptive account of your child’s learning progress for each term. It highlights what your child can already do, what they are currently developing, and how they can be further supported.</p>
+<p class="text-justify" style="font-size: 7.5pt;">This report is based on varied evidence of learning, including classroom activities, observations, learner outputs, and assessments. It is designed to give a clearer and more meaningful understanding of your child’s development rather than relying on numerical or letter grades.</p>
+<br>
+
+<table style="width:100%; border:none; table-layout:fixed;">
+  <tr style="border:none;">
+    <td style="border:none; width:49%; padding:0 8px 0 0; vertical-align:top;">
+        <div class="term-box">
+            <h3>TERM 1 (UNANG TERMINO)</h3>
+            <p class="term-title">What Your Child Can Do (Mga Nagagampanan)</p>
+            <div class="term-val">____________________________________________________<br>____________________________________________________</div>
+            <p class="term-title">What Your Child is Learning To Improve (Dapat Pahusayin)</p>
+            <div class="term-val">____________________________________________________<br>____________________________________________________</div>
+            <p style="font-size:7pt; margin-top:4px;">Parent's/Guardian's Signature: <span class="underlined">______________________</span></p>
+        </div>
+        <div class="term-box">
+            <h3>TERM 2 (IKALAWANG TERMINO)</h3>
+            <p class="term-title">What Your Child Can Do (Mga Nagagampanan)</p>
+            <div class="term-val">____________________________________________________<br>____________________________________________________</div>
+            <p class="term-title">What Your Child is Learning To Improve (Dapat Pahusayin)</p>
+            <div class="term-val">____________________________________________________<br>____________________________________________________</div>
+            <p style="font-size:7pt; margin-top:4px;">Parent's/Guardian's Signature: <span class="underlined">______________________</span></p>
+        </div>
+        <div class="term-box">
+            <h3>TERM 3 (IKATLONG TERMINO)</h3>
+            <p class="term-title">What Your Child Can Do (Mga Nagagampanan)</p>
+            <div class="term-val">____________________________________________________<br>____________________________________________________</div>
+            <p class="term-title">What Your Child is Learning To Improve (Dapat Pahusayin)</p>
+            <div class="term-val">____________________________________________________<br>____________________________________________________</div>
+            <p style="font-size:7pt; margin-top:4px;">Parent's/Guardian's Signature: <span class="underlined">______________________</span></p>
+        </div>
+    </td>
+    <td style="border:none; width:51%; padding:0 0 0 8px; vertical-align:top;">
+        <h3>ATTENDANCE RECORD</h3>
+        <table>
+            <thead>
+                <tr style="background-color:#f2f2f2;"><th style="width:12%;">Term</th><th style="width:28%;">Month</th><th style="width:20%;">School Days</th><th style="width:20%;">Present</th><th style="width:20%;">Absent</th></tr>
+            </thead>
+            <tbody>
+                <tr><td rowspan="3" class="text-center" style="vertical-align:middle;"><span class="bold">1</span></td><td>June</td><td class="text-center"></td><td class="text-center"></td><td class="text-center"></td></tr>
+                <tr><td>July</td><td class="text-center"></td><td class="text-center"></td><td class="text-center"></td></tr>
+                <tr><td>August</td><td class="text-center"></td><td class="text-center"></td><td class="text-center"></td></tr>
+                <tr><td rowspan="4" class="text-center" style="vertical-align:middle;"><span class="bold">2</span></td><td>September</td><td class="text-center"></td><td class="text-center"></td><td class="text-center"></td></tr>
+                <tr><td>October</td><td class="text-center"></td><td class="text-center"></td><td class="text-center"></td></tr>
+                <tr><td>November</td><td class="text-center"></td><td class="text-center"></td><td class="text-center"></td></tr>
+                <tr><td>December</td><td class="text-center"></td><td class="text-center"></td><td class="text-center"></td></tr>
+                <tr><td rowspan="3" class="text-center" style="vertical-align:middle;"><span class="bold">3</span></td><td>January</td><td class="text-center"></td><td class="text-center"></td><td class="text-center"></td></tr>
+                <tr><td>February</td><td class="text-center"></td><td class="text-center"></td><td class="text-center"></td></tr>
+                <tr><td>March / April</td><td class="text-center"></td><td class="text-center"></td><td class="text-center"></td></tr>
+                <tr style="background-color:#f9f9f9;"><td colspan="2" class="bold text-center">TOTAL</td><td class="bold text-center"></td><td class="bold text-center"></td><td class="bold text-center"></td></tr>
+            </tbody>
+        </table>
+        <br>
+        <span class="bold" style="font-size:7.5pt; display:block; margin-bottom:1px;">IMPORTANT NOTE TO PARENTS/GUARDIANS</span>
+        <p class="text-justify" style="font-size:6.5pt; line-height:1.15;">A detailed record of your child’s progress across specific learning competencies is attached in the succeeding page. This includes the monitoring of skills in Literacy and Reading, Language, Mathematics, Good Manners and Right Conduct, and Makabayan.</p>
+        <p class="bold" style="font-size:6.5pt; margin-top:2px;">Performance levels used in monitoring:</p>
+        <table>
+            <tr style="background-color:#f2f2f2;"><th style="width:15%;">Level</th><th style="width:30%;">Descriptor</th><th style="width:55%;">Description</th></tr>
+            <tr><td class="text-center bold">A</td><td>Advancing</td><td>Exceeds expectations</td></tr>
+            <tr><td class="text-center bold">B</td><td>Benchmarking</td><td>Meets expectations</td></tr>
+            <tr><td class="text-center bold">C</td><td>Connecting</td><td>Needs minimal guidance</td></tr>
+            <tr><td class="text-center bold">D</td><td>Developing</td><td>Needs regular support</td></tr>
+            <tr><td class="text-center bold">E</td><td>Energizing</td><td>Beginning skills</td></tr>
+        </table>
+        <br>
+        <span class="bold" style="font-size:7.5pt; display:block; margin-bottom:1px;">CERTIFICATE OF TRANSFER</span>
+        <p class="text-justify" style="font-size:6.5pt; line-height:1.2;">This is to certify that the above named learner has satisfactorily completed the requirements for the grade level indicated.<br><br>
+        Admitted to Grade: _________________________<br>
+        Eligible for Admission to Grade: _________________________<br>
+        Approved: _________________________<br>
+        Adviser: _________________ | School Head: _________________<br><br>
+        <span class="bold">CANCELLATION OF ELIGIBILITY TO TRANSFER</span><br>
+        Admitted in: _________________ &nbsp;&nbsp; Date: _________________<br>
+        School Head: _________________________</p>
+    </td>
+  </tr>
+</table>
+</body>
+</html>`;
+        }
+
+        // Generate HTML Document String for SF9 Grade 4-12
+        function generateSF9_Grade4_12(learner) {
+            return `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="UTF-8">
+<title>Learner's Performance Report</title>
+<style>
+@page Section1 {
+    size: 297mm 210mm;
+    margin: 10mm 10mm 10mm 10mm;
+    mso-page-orientation: landscape;
+}
+div.Section1 {
+    page: Section1;
+}
+body, p, h1, h2, h3, h4, td {
+    margin: 0in !important;
+    margin-bottom: .0001pt !important;
+    line-height: 100% !important;
+    mso-line-height-rule: exactly !important;
+}
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 9pt;
+}
+table {
+    mso-table-lspace: 0pt;
+    mso-table-rspace: 0pt;
+    border-collapse: collapse;
+}
+.header-table {
+    width: 100%;
+}
+.header-center-text {
+    text-align: center;
+}
+.header-center-text p {
+    font-size: 9pt;
+    line-height: 11pt !important;
+}
+.header-center-text h1 {
+    font-size: 11.5pt;
+    font-weight: bold;
+    line-height: 14pt !important;
+}
+.layout-table td {
+    padding: 1px 2px !important;
+}
+.line-fill {
+    border-bottom: 1px solid #000;
+    display: inline-block;
+    min-width: 50px;
+    font-weight: bold;
+}
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.data-table th, .data-table td {
+    border: 1px solid #000 !important;
+    padding: 2px 4px !important;
+    font-size: 8.5pt;
+}
+.data-table th {
+    background: #f8f8f8;
+    font-weight: bold;
+}
+.section-box {
+    border: 1px solid #000;
+    padding: 4px 6px;
+    margin-bottom: 5px;
+}
+.deped-logo {
+    width: 42px;
+}
+.school-logo-box {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #000;
+    text-align: center;
+}
+h2 { font-size: 12pt; font-weight: bold; text-align: center; line-height: 16pt !important; }
+h3 { font-size: 10pt; font-weight: bold; text-align: center; margin: 0; }
+h4 { font-size: 9pt; font-weight: bold; text-align: center; }
+.sign-line-text {
+    border-top: 1px solid #000;
+    margin-top: 14px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 8.5pt;
+}
+.note-text {
+    font-size: 8pt;
+    margin: 4px 0 !important;
+}
+</style>
+</head>
+<body>
+<div class="Section1">
+<div class="report-card" id="reportCard">
+        <table style="width: 100%; border-collapse: collapse; border: none; table-layout: fixed;">
+            <tbody><tr>
+                <td style="width: 62%; padding-right: 12px; vertical-align: top; border: none;">
+                    
+                    <table class="header-table">
+                        <tbody><tr>
+                            <td style="width: 50px; text-align: left;">
+                                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/9a/DepEd_Philippines.svg/120px-DepEd_Philippines.svg.png" alt="DepEd Logo" class="deped-logo">
+                            </td>
+                            <td class="header-center-text">
+                                <p>Republic of the Philippines</p>
+                                <p>Department of Education</p>
+                                
+                                <table class="layout-table" style="width: auto; margin: 0 auto;">
+                                    <tbody><tr>
+                                        <td style="white-space: nowrap;">Region:</td>
+                                        <td style="width: 130px;"><span class="line-fill">${classMetadata.region || ''}</span></td>
+                                    </tr>
+                                </tbody></table>
+                                
+                                <h1>SCHOOLS DIVISION OFFICE OF <span class="line-fill" style="display:inline-block; width: 150px; vertical-align: bottom;">${classMetadata.division ? classMetadata.division.toUpperCase() : ''}</span></h1>
+                                
+                                <table class="layout-table" style="width: auto; margin: 0 auto;">
+                                    <tbody><tr>
+                                        <td style="white-space: nowrap;">Municipality/City, Province:</td>
+                                        <td style="width: 160px;"><span class="line-fill"></span></td>
+                                    </tr>
+                                </tbody></table>
+                            </td>
+                            <td style="width: 50px; text-align: right;">
+                                <table style="width: 42px; border-collapse: collapse; display: inline-block; border: none;">
+                                    <tbody><tr>
+                                        <td class="school-logo-box">Logo</td>
+                                    </tr>
+                                </tbody></table>
+                            </td>
+                        </tr>
+                    </tbody></table>
+
+                    <h2 style="text-align: center; font-size: 12px; font-weight: bold; margin: 3px 0;">LEARNER'S PERFORMANCE REPORT</h2>
+                    
+                    <table class="layout-table">
+                        <tbody><tr>
+                            <td style="width: 7%; font-weight: bold; white-space: nowrap;">Name:</td>
+                            <td style="width: 53%;"><span class="line-fill">${learner.name}</span></td>
+                            <td style="width: 6%; font-weight: bold; white-space: nowrap; padding-left: 5px;">Age:</td>
+                            <td style="width: 14%;"><span class="line-fill">${learner.age}</span></td>
+                            <td style="width: 6%; font-weight: bold; white-space: nowrap; padding-left: 5px;">Sex:</td>
+                            <td style="width: 14%;"><span class="line-fill">${learner.sex}</span></td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold; white-space: nowrap;">LRN:</td>
+                            <td><span class="line-fill">${learner.lrn}</span></td>
+                            <td style="font-weight: bold; white-space: nowrap; padding-left: 5px;">Grade:</td>
+                            <td><span class="line-fill">${learner.grade}</span></td>
+                            <td style="font-weight: bold; white-space: nowrap; padding-left: 5px;">Sec:</td>
+                            <td><span class="line-fill">${learner.section}</span></td>
+                        </tr>
+                    </tbody></table>
+                    <table class="layout-table">
+                        <tbody><tr>
+                            <td style="width: 18%; font-weight: bold; white-space: nowrap;">Track (SHS only):</td>
+                            <td style="width: 42%;"><span class="line-fill"></span></td>
+                            <td style="width: 15%; font-weight: bold; white-space: nowrap; padding-left: 5px;">School Year:</td>
+                            <td style="width: 25%;"><span class="line-fill">${classMetadata.schoolYear || ''}</span></td>
+                        </tr>
+                    </tbody></table>
+
+                    <p class="note-text">
+                        Dear Parents,<br>
+                        This Performance Report shows the ability and progress your child has made in the different learning areas as well as his/her core values. The school welcomes you should you desire to know more about your child's progress.
+                    </p>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="width: 46%; text-align: left;">LEARNING AREAS</th>
+                                <th colspan="3" style="width: 21%;">TERM</th>
+                                <th rowspan="2" style="width: 16.5%;">Final Grade</th>
+                                <th rowspan="2" style="width: 16.5%;">Remarks</th>
+                            </tr>
+                            <tr>
+                                <th style="width: 7%;">1</th>
+                                <th style="width: 7%;">2</th>
+                                <th style="width: 7%;">3</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Filipino</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td>English</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td>Mathematics</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td>Science</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td>Araling Panlipunan (AP)</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td>GMRC / Values Education</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td>EPP / TLE</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td>MAPEH</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td style="padding-left: 12px; font-style: italic;">Music and Arts</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td style="padding-left: 12px; font-style: italic;">Physical Education and Health</td><td></td><td></td><td></td><td></td><td></td></tr>
+                            <tr><td><strong>General Average</strong></td><td></td><td></td><td></td><td></td><td></td></tr>
+                        </tbody>
+                    </table>
+
+                    <h3 style="font-size: 10px; font-weight: bold; margin: 4px 0 1px 0; text-align: left;">PERFORMANCE DESCRIPTORS</h3>
+                    <table class="data-table" style="margin-bottom: 6px;">
+                        <thead>
+                            <tr>
+                                <th style="width: 33.33%; text-align: left;">Grading Scale</th>
+                                <th style="width: 33.33%; text-align: left;">Description</th>
+                                <th style="width: 33.33%; text-align: left;">Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>90-100</td><td>Advancing</td><td>Passed</td></tr>
+                            <tr><td>80-89</td><td>Benchmarking</td><td>Passed</td></tr>
+                            <tr><td>75-79</td><td>Approaching Proficiency</td><td>Passed</td></tr>
+                            <tr><td>65-74</td><td>Developing</td><td>Failed</td></tr>
+                            <tr><td>0-64</td><td>Emerging</td><td>Failed</td></tr>
+                        </tbody>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; border: none; table-layout: fixed;">
+                        <tbody><tr>
+                            <td style="width: 44%; padding-right: 6px; vertical-align: top; border: none !important;">
+                                <div class="section-box">
+                                    <h3>ATTENDANCE RECORD</h3>
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="text-align: left; width: 55%;">Month</th>
+                                                <th style="width: 25%;"></th>
+                                                <th style="width: 20%;">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr><td>No. of Class Days</td><td></td><td></td></tr>
+                                            <tr><td>No. of Days Present</td><td></td><td></td></tr>
+                                            <tr><td>Absent</td><td></td><td></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                            <td style="width: 56%; vertical-align: top; border: none !important;">
+                                <div class="section-box">
+                                    <h3>TEACHER'S COMMENTS/REMARKS</h3>
+                                    <table class="layout-table">
+                                        <tbody><tr>
+                                            <td style="width: 16%; font-weight: bold; white-space: nowrap;">Term 1:</td>
+                                            <td style="width: 84%;"><span class="line-fill"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-weight: bold; white-space: nowrap;">Term 2:</td>
+                                            <td><span class="line-fill"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="font-weight: bold; white-space: nowrap;">Term 3:</td>
+                                            <td><span class="line-fill"></span></td>
+                                        </tr>
+                                    </tbody></table>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody></table>
+                </td>
+
+                <td style="width: 38%; vertical-align: top; border: none;">
+                    <div class="section-box">
+                        <h3>PARENTS/GUARDIAN'S SIGNATURE</h3>
+                        <table class="layout-table" style="margin: 2px 0;">
+                            <tbody><tr>
+                                <td style="width: 20%; font-weight: bold; white-space: nowrap;">Term 1:</td>
+                                <td style="width: 80%;"><span class="line-fill"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; white-space: nowrap;">Term 2:</td>
+                                <td><span class="line-fill"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; white-space: nowrap;">Term 3:</td>
+                                <td><span class="line-fill"></span></td>
+                            </tr>
+                        </tbody></table>
+                    </div>
+
+                    <div class="section-box">
+                        <h3>CERTIFICATE OF TRANSFER</h3>
+                        <p style="font-size: 8px; margin-bottom: 2px; text-align: justify;">This is to certify that the above-named learner has satisfactorily completed the requirements for the grade level indicated:</p>
+                        
+                        <table class="layout-table">
+                            <tbody><tr>
+                                <td style="width: 32%; font-weight: bold; white-space: nowrap;">Admitted to Grade:</td>
+                                <td style="width: 68%;"><span class="line-fill"></span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: bold; white-space: nowrap;">Eligible for Admission to Grade:</td>
+                                <td><span class="line-fill"></span></td>
+                            </tr>
+                        </tbody></table>
+                        
+                        <table class="layout-table" style="margin-top: 4px;">
+                            <tbody><tr>
+                                <td style="width: 45%;"><div class="sign-line-text">School Head</div></td>
+                                <td style="width: 10%;"></td>
+                                <td style="width: 45%;"><div class="sign-line-text">Adviser</div></td>
+                            </tr>
+                        </tbody></table>
+
+                        <h4>CANCELLATION OF ELIGIBILITY TO TRANSFER</h4>
+                        <table class="layout-table">
+                            <tbody><tr>
+                                <td style="width: 22%; font-weight: bold; white-space: nowrap;">Admitted in:</td>
+                                <td style="width: 43%;"><span class="line-fill"></span></td>
+                                <td style="width: 10%; font-weight: bold; white-space: nowrap; padding-left: 4px;">Date:</td>
+                                <td style="width: 25%;"><span class="line-fill"></span></td>
+                            </tr>
+                        </tbody></table>
+                        
+                        <table class="layout-table" style="margin-top: 4px;">
+                            <tbody><tr>
+                                <td style="width: 25%;"></td>
+                                <td style="width: 50%;"><div class="sign-line-text" style="margin-top: 10px;">School Head</div></td>
+                                <td style="width: 25%;"></td>
+                            </tr>
+                        </tbody></table>
+                    </div>
+                </td>
+            </tr>
+        </tbody></table>
+    </div></div></body></html>`;
+        }
+
+        function previewLearnerSF9(index) {
+            const learner = parsedLearners[index];
+            if (!learner) return;
+
+            const sf9Type = document.getElementById('sf9Type').value;
+            let docHtml = (sf9Type === '1-3') ? generateSF9_Grade1_3(learner) : generateSF9_Grade4_12(learner);
+
+            document.getElementById('modalTitle').innerText = `SF9 Preview - ${learner.name} (${learner.lrn})`;
+            document.getElementById('modalBody').innerHTML = `<div class="bg-white p-4 shadow rounded border overflow-auto">${docHtml}</div>`;
+            document.getElementById('previewModal').classList.remove('hidden');
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').classList.add('hidden');
+        }
+
+        async function exportBatchSF9() {
+            if (parsedLearners.length === 0) {
+                alert('No learner records available to export.');
+                return;
+            }
+
+            const exportBtn = document.getElementById('exportBtn');
+            const originalText = exportBtn.innerHTML;
+            exportBtn.disabled = true;
+            exportBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-lg"></i> Packaging Zip...`;
+
+            try {
+                const zip = new JSZip();
+                const sf9Type = document.getElementById('sf9Type').value;
+                const folderName = `SF9_${classMetadata.gradeLevel || 'Grade'}_${classMetadata.section || 'Section'}`.replace(/[^a-zA-Z0-9_-]/g, '_');
+                const folder = zip.folder(folderName);
+
+                parsedLearners.forEach((learner) => {
+                    const docHtml = (sf9Type === '1-3') ? generateSF9_Grade1_3(learner) : generateSF9_Grade4_12(learner);
+                    // Clean filename: LRN_Name.doc (replacing special characters and commas with underscores)
+                    const safeName = learner.name.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+                    const filename = `SF9_${learner.lrn}_${safeName}.doc`;
+                    
+                    folder.file(filename, docHtml);
+                });
+
+                const content = await zip.generateAsync({ type: 'blob' });
+                const zipFilename = `${folderName}_SF9_Docs.zip`;
+
+                // Trigger Download
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = zipFilename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+            } catch (err) {
+                alert('Error generating ZIP package: ' + err.message);
+            } finally {
+                exportBtn.disabled = false;
+                exportBtn.innerHTML = originalText;
+            }
+        }
+    </script>
+</body>
+</html>
