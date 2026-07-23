@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Suite & Resources Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .active-nav {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: #4f46e5;
+            border-right: 4px solid #4f46e5;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased h-screen flex overflow-hidden">
+
+    <!-- Mobile Navigation Drawer Overlay -->
+    <div id="mobile-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out shadow-lg md:shadow-none">
+        <!-- Logo / Header -->
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-200">
+                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 leading-tight">Educator's Suite</h1>
+                    <p class="text-xs text-slate-500 font-medium">Intervention & Assessment Portal</p>
+                </div>
+            </div>
+            <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-slate-600 focus:outline-none">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+            <div class="px-3 pb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Main Dashboard</div>
+            
+            <a href="#" onclick="showHomeView(); return false;" id="nav-home" class="nav-item active-nav flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors group">
+                <i class="fa-solid fa-border-all w-6 text-center mr-3 text-lg"></i>
+                <span>Dashboard Overview</span>
+            </a>
+
+            <div class="px-3 pt-6 pb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Intervention Tools</div>
+
+            <a href="#" onclick="loadTool('crla', 'CRLA-based Reading Intervention Plan Maker with ILMP', 'CRLAbased Reading Intervention Plan Maker with ILMP.html'); return false;" id="nav-crla" class="nav-item flex items-center px-3 py-3 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-indigo-600 transition-colors">
+                <i class="fa-solid fa-book-open-reader w-6 text-center mr-3 text-lg text-emerald-500"></i>
+                <span class="truncate">CRLA Intervention Plan</span>
+            </a>
+
+            <a href="#" onclick="loadTool('philiri', 'PhilIRI-based Intervention Plan Maker with ILMP', 'PhilIRI-based Intervention Plan Maker with ILMP.html'); return false;" id="nav-philiri" class="nav-item flex items-center px-3 py-3 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-indigo-600 transition-colors">
+                <i class="fa-solid fa-file-signature w-6 text-center mr-3 text-lg text-blue-500"></i>
+                <span class="truncate">PhilIRI Intervention Plan</span>
+            </a>
+
+            <div class="px-3 pt-6 pb-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">Records & Reports</div>
+
+            <a href="#" onclick="loadTool('sf9', 'School Form 9 (SF9) Maker', 'SF9 Maker.html'); return false;" id="nav-sf9" class="nav-item flex items-center px-3 py-3 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-indigo-600 transition-colors">
+                <i class="fa-solid fa-id-card w-6 text-center mr-3 text-lg text-purple-500"></i>
+                <span class="truncate">SF9 Maker</span>
+            </a>
+
+            <a href="#" onclick="loadTool('wap', 'Weekly Action Plan (WAP) with Credentials', 'WAP with credentials.html'); return false;" id="nav-wap" class="nav-item flex items-center px-3 py-3 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-indigo-600 transition-colors">
+                <i class="fa-solid fa-clipboard-check w-6 text-center mr-3 text-lg text-amber-500"></i>
+                <span class="truncate">WAP with Credentials</span>
+            </a>
+        </nav>
+
+        <!-- Footer / Repository Info -->
+        <div class="p-4 border-t border-slate-100 bg-slate-50/50">
+            <div class="flex items-center space-x-3 text-xs text-slate-500">
+                <i class="fa-brands fa-github text-base text-slate-700"></i>
+                <span class="truncate font-mono">GitHub Repository Hosted</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        
+        <!-- Top Navbar -->
+        <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 sm:px-6 z-10">
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleMobileSidebar()" class="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <h2 id="topbar-title" class="text-base sm:text-lg font-semibold text-slate-800 truncate">
+                    Dashboard Overview
+                </h2>
+            </div>
+
+            <!-- Top Header Actions -->
+            <div id="topbar-actions" class="flex items-center space-x-2">
+                <!-- Dynamic actions inserted via JS when tool is loaded -->
+            </div>
+        </header>
+
+        <!-- Main Viewport Area -->
+        <main class="flex-1 overflow-y-auto relative bg-slate-50">
+            
+            <!-- HOME OVERVIEW GRID VIEW -->
+            <div id="view-home" class="p-4 sm:p-6 md:p-8 max-w-7xl mx-auto space-y-8">
+                
+                <!-- Welcome Banner -->
+                <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-800 text-white p-6 sm:p-8 shadow-xl">
+                    <div class="relative z-10 max-w-2xl">
+                        <span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold tracking-wide uppercase">Hub Workspace</span>
+                        <h3 class="text-2xl sm:text-3xl font-bold mt-3">Welcome to your Teacher Resource Portal</h3>
+                        <p class="mt-2 text-indigo-100 text-sm sm:text-base leading-relaxed">
+                            Access all your assessment tools, intervention makers, and school record generators seamlessly in one unified, responsive workspace.
+                        </p>
+                    </div>
+                    <!-- Decorative background SVG icons -->
+                    <i class="fa-solid fa-laptop-code absolute -right-6 -bottom-6 text-9xl text-white/10 select-none pointer-events-none"></i>
+                </div>
+
+                <!-- Tools Grid -->
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Available Applications</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                        
+                        <!-- Tool Card 1: CRLA -->
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all p-6 flex flex-col justify-between group">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-book-open-reader"></i>
+                                    </div>
+                                    <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">Reading Tool</span>
+                                </div>
+                                <h5 class="text-lg font-bold text-slate-800 mb-2">CRLA-based Reading Intervention Plan Maker</h5>
+                                <p class="text-slate-500 text-sm leading-relaxed mb-4">
+                                    Comprehensive Comprehensive Rapid Literacy Assessment tool with Integrated Individual Learner Monitoring Plan (ILMP) generation.
+                                </p>
+                            </div>
+                            <div class="flex items-center space-x-3 pt-4 border-t border-slate-100">
+                                <button onclick="loadTool('crla', 'CRLA-based Reading Intervention Plan Maker with ILMP', 'CRLAbased Reading Intervention Plan Maker with ILMP.html')" class="flex-1 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold text-center transition-colors">
+                                    Launch Tool
+                                </button>
+                                <a href="CRLAbased Reading Intervention Plan Maker with ILMP.html" target="_blank" class="p-2.5 text-slate-400 hover:text-slate-600 border border-slate-200 hover:border-slate-300 rounded-lg transition-colors" title="Open in new window">
+                                    <i class="fa-solid fa-up-right-from-square"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Tool Card 2: PhilIRI -->
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all p-6 flex flex-col justify-between group">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-file-signature"></i>
+                                    </div>
+                                    <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-blue-100 text-blue-800">Assessment</span>
+                                </div>
+                                <h5 class="text-lg font-bold text-slate-800 mb-2">PhilIRI-based Intervention Plan Maker</h5>
+                                <p class="text-slate-500 text-sm leading-relaxed mb-4">
+                                    Philippine Informal Reading Inventory plan maker tailored for targeted student reading profile development and ILMP integration.
+                                </p>
+                            </div>
+                            <div class="flex items-center space-x-3 pt-4 border-t border-slate-100">
+                                <button onclick="loadTool('philiri', 'PhilIRI-based Intervention Plan Maker with ILMP', 'PhilIRI-based Intervention Plan Maker with ILMP.html')" class="flex-1 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold text-center transition-colors">
+                                    Launch Tool
+                                </button>
+                                <a href="PhilIRI-based Intervention Plan Maker with ILMP.html" target="_blank" class="p-2.5 text-slate-400 hover:text-slate-600 border border-slate-200 hover:border-slate-300 rounded-lg transition-colors" title="Open in new window">
+                                    <i class="fa-solid fa-up-right-from-square"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Tool Card 3: SF9 -->
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all p-6 flex flex-col justify-between group">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-id-card"></i>
+                                    </div>
+                                    <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-purple-100 text-purple-800">Report Card</span>
+                                </div>
+                                <h5 class="text-lg font-bold text-slate-800 mb-2">SF9 Maker</h5>
+                                <p class="text-slate-500 text-sm leading-relaxed mb-4">
+                                    Automated School Form 9 generator for official learner progress report card computation and quick printing.
+                                </p>
+                            </div>
+                            <div class="flex items-center space-x-3 pt-4 border-t border-slate-100">
+                                <button onclick="loadTool('sf9', 'School Form 9 (SF9) Maker', 'SF9 Maker.html')" class="flex-1 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold text-center transition-colors">
+                                    Launch Tool
+                                </button>
+                                <a href="SF9 Maker.html" target="_blank" class="p-2.5 text-slate-400 hover:text-slate-600 border border-slate-200 hover:border-slate-300 rounded-lg transition-colors" title="Open in new window">
+                                    <i class="fa-solid fa-up-right-from-square"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Tool Card 4: WAP -->
+                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all p-6 flex flex-col justify-between group">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="w-12 h-12 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-clipboard-check"></i>
+                                    </div>
+                                    <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Planning</span>
+                                </div>
+                                <h5 class="text-lg font-bold text-slate-800 mb-2">WAP with Credentials</h5>
+                                <p class="text-slate-500 text-sm leading-relaxed mb-4">
+                                    Weekly Action Plan maker complete with credential verification and customizable teacher log templates.
+                                </p>
+                            </div>
+                            <div class="flex items-center space-x-3 pt-4 border-t border-slate-100">
+                                <button onclick="loadTool('wap', 'Weekly Action Plan (WAP) with Credentials', 'WAP with credentials.html')" class="flex-1 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold text-center transition-colors">
+                                    Launch Tool
+                                </button>
+                                <a href="WAP with credentials.html" target="_blank" class="p-2.5 text-slate-400 hover:text-slate-600 border border-slate-200 hover:border-slate-300 rounded-lg transition-colors" title="Open in new window">
+                                    <i class="fa-solid fa-up-right-from-square"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- EMBEDDED TOOL IFRAME VIEW -->
+            <div id="view-iframe" class="hidden w-full h-full">
+                <iframe id="tool-frame" class="w-full h-full border-0" src="about:blank" title="Application View"></iframe>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- JavaScript Navigation Logic -->
+    <script>
+        let currentUrl = '';
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        function setActiveNav(navId) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active-nav');
+                item.classList.add('text-slate-600');
+            });
+            const activeItem = document.getElementById(`nav-${navId}`);
+            if (activeItem) {
+                activeItem.classList.add('active-nav');
+                activeItem.classList.remove('text-slate-600');
+            }
+        }
+
+        function showHomeView() {
+            document.getElementById('view-home').classList.remove('hidden');
+            document.getElementById('view-iframe').classList.add('hidden');
+            document.getElementById('topbar-title').innerText = 'Dashboard Overview';
+            document.getElementById('topbar-actions').innerHTML = '';
+            document.getElementById('tool-frame').src = 'about:blank';
+            setActiveNav('home');
+            
+            // Close mobile menu if open
+            if (!document.getElementById('mobile-overlay').classList.contains('hidden')) {
+                toggleMobileSidebar();
+            }
+        }
+
+        function loadTool(id, title, url) {
+            currentUrl = url;
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-iframe').classList.remove('hidden');
+            document.getElementById('topbar-title').innerText = title;
+            
+            // Set iframe src
+            document.getElementById('tool-frame').src = url;
+
+            // Render action buttons in top header
+            const actionsContainer = document.getElementById('topbar-actions');
+            actionsContainer.innerHTML = `
+                <button onclick="reloadIframe()" class="p-2 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors" title="Reload Tool">
+                    <i class="fa-solid fa-rotate-right text-sm"></i>
+                </button>
+                <a href="${url}" target="_blank" class="flex items-center space-x-1 px-3 py-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors">
+                    <span>Full Screen</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                </a>
+            `;
+
+            setActiveNav(id);
+
+            // Close mobile sidebar after selecting a tool
+            if (!document.getElementById('mobile-overlay').classList.contains('hidden')) {
+                toggleMobileSidebar();
+            }
+        }
+
+        function reloadIframe() {
+            const frame = document.getElementById('tool-frame');
+            frame.src = frame.src;
+        }
+    </script>
+</body>
+</html>
