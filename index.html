@@ -27,6 +27,40 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased h-screen flex overflow-hidden">
 
+    <!-- Security PIN Lock Overlay -->
+    <div id="pin-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center border border-slate-100">
+            <div class="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mx-auto mb-4 text-xl shadow-inner">
+                <i id="pin-icon" class="fa-solid fa-lock"></i>
+            </div>
+            <h3 id="pin-title" class="text-lg font-bold text-slate-800">Enter Security PIN</h3>
+            <p id="pin-desc" class="text-xs text-slate-500 mt-1 mb-6">Please enter your 4-digit PIN to unlock the Teacher's Toolkit.</p>
+            
+            <!-- PIN Input Field -->
+            <div class="mb-4">
+                <input type="password" id="pin-input" maxlength="4" placeholder="••••" 
+                       class="w-48 text-center text-2xl tracking-[0.5em] font-bold py-2 px-4 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent text-slate-800 transition-all shadow-sm"
+                       onkeypress="return isNumberKey(event)"
+                       onkeyup="checkPinSubmit(event)">
+            </div>
+            
+            <!-- Error Message -->
+            <p id="pin-error" class="text-xs text-rose-500 font-semibold mb-4 hidden">Incorrect PIN. Please try again.</p>
+
+            <!-- Action Button -->
+            <button id="pin-btn" onclick="handlePinAction()" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-all shadow-md shadow-indigo-200 active:scale-[0.98]">
+                Unlock Toolkit
+            </button>
+
+            <!-- Reset Link -->
+            <div class="mt-4 pt-4 border-t border-slate-100">
+                <button onclick="resetPin()" class="text-[11px] text-slate-400 hover:text-rose-500 font-medium transition-colors">
+                    Forgot PIN? Reset Lock
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Mobile Navigation Drawer Overlay -->
     <div id="mobile-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden md:hidden transition-opacity"></div>
 
@@ -105,7 +139,14 @@
             </div>
 
             <!-- Top Header Actions -->
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Instant Lock Button -->
+                <button onclick="lockApp()" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-rose-600 bg-slate-100 hover:bg-rose-50 rounded-lg transition-colors border border-slate-200" title="Lock Workspace">
+                    <i class="fa-solid fa-lock text-[11px]"></i>
+                    <span class="hidden sm:inline">Lock</span>
+                </button>
+
+                <!-- Facebook Follow -->
                 <a href="https://www.facebook.com/profile.php?id=61591560969191" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm">
                     <i class="fa-brands fa-facebook-f"></i>
                     <span>Follow us on Facebook</span>
@@ -224,10 +265,104 @@
         </main>
     </div>
 
-    <!-- JavaScript Navigation Logic -->
+    <!-- JavaScript Navigation & PIN Logic -->
     <script>
         let currentUrl = '';
 
+        /* --- PIN LOCK SYSTEM --- */
+        const pinOverlay = document.getElementById('pin-overlay');
+        const pinTitle = document.getElementById('pin-title');
+        const pinDesc = document.getElementById('pin-desc');
+        const pinInput = document.getElementById('pin-input');
+        const pinBtn = document.getElementById('pin-btn');
+        const pinError = document.getElementById('pin-error');
+        const pinIcon = document.getElementById('pin-icon');
+
+        function initPinSystem() {
+            const savedPin = localStorage.getItem('app_pin');
+            pinInput.value = '';
+            pinError.classList.add('hidden');
+            pinOverlay.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+
+            if (!savedPin) {
+                pinTitle.innerText = "Create Security PIN";
+                pinDesc.innerText = "Set a 4-digit PIN to protect your classroom records and tools.";
+                pinBtn.innerText = "Save & Unlock";
+                pinIcon.className = "fa-solid fa-key";
+            } else {
+                pinTitle.innerText = "Enter Security PIN";
+                pinDesc.innerText = "Please enter your 4-digit PIN to unlock the Teacher's Toolkit.";
+                pinBtn.innerText = "Unlock Toolkit";
+                pinIcon.className = "fa-solid fa-lock";
+            }
+            setTimeout(() => pinInput.focus(), 200);
+        }
+
+        function handlePinAction() {
+            const inputVal = pinInput.value.trim();
+            const savedPin = localStorage.getItem('app_pin');
+
+            if (inputVal.length < 4) {
+                showPinError("Please enter a 4-digit PIN.");
+                return;
+            }
+
+            if (!savedPin) {
+                localStorage.setItem('app_pin', inputVal);
+                unlockApp();
+            } else {
+                if (inputVal === savedPin) {
+                    unlockApp();
+                } else {
+                    showPinError("Incorrect PIN. Please try again.");
+                    pinInput.value = '';
+                    pinInput.focus();
+                }
+            }
+        }
+
+        function unlockApp() {
+            pinError.classList.add('hidden');
+            pinOverlay.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => pinOverlay.classList.add('hidden'), 300);
+        }
+
+        function lockApp() {
+            initPinSystem();
+        }
+
+        function showPinError(msg) {
+            pinError.innerText = msg;
+            pinError.classList.remove('hidden', 'text-emerald-600');
+            pinError.classList.add('text-rose-500');
+        }
+
+        function isNumberKey(evt) {
+            const charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) return false;
+            return true;
+        }
+
+        function checkPinSubmit(event) {
+            pinError.classList.add('hidden');
+            if (event.key === "Enter") {
+                handlePinAction();
+            }
+        }
+
+        function resetPin() {
+            if (confirm("Are you sure you want to reset your PIN? This will remove the current security lock.")) {
+                localStorage.removeItem('app_pin');
+                pinInput.value = '';
+                initPinSystem();
+                showPinError("PIN has been reset. Please create a new 4-digit PIN.");
+                pinError.classList.replace('text-rose-500', 'text-emerald-600');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', initPinSystem);
+
+        /* --- NAVIGATION SYSTEM --- */
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('mobile-overlay');
@@ -255,7 +390,6 @@
             document.getElementById('tool-frame').src = 'about:blank';
             setActiveNav('home');
             
-            // Close mobile menu if open
             if (!document.getElementById('mobile-overlay').classList.contains('hidden')) {
                 toggleMobileSidebar();
             }
@@ -267,10 +401,8 @@
             document.getElementById('view-iframe').classList.remove('hidden');
             document.getElementById('topbar-title').innerText = title;
             
-            // Set iframe src
             document.getElementById('tool-frame').src = url;
 
-            // Render action buttons in top header
             const actionsContainer = document.getElementById('topbar-actions');
             actionsContainer.innerHTML = `
                 <button onclick="reloadIframe()" class="p-2 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition-colors" title="Reload Tool">
@@ -284,7 +416,6 @@
 
             setActiveNav(id);
 
-            // Close mobile sidebar after selecting a tool
             if (!document.getElementById('mobile-overlay').classList.contains('hidden')) {
                 toggleMobileSidebar();
             }
