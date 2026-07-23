@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DepEd SF9 Progress Report Card Generator</title>
-    <meta name="google-adsense-account" content="ca-pub-9462603078588993">
     <!-- Tailwind CSS CDN for modern responsive UI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- SheetJS for Excel File Parsing -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <!-- JSZip for Zip File Packaging -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9462603078588993"
-     crossorigin="anonymous"></script>
+    <!-- FileSaver.js for Universal Cross-Platform Downloads (iOS, Android, Desktop) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -22,12 +21,16 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
         }
+        /* Touch optimization for mobile */
+        button, a, label {
+            touch-action: manipulation;
+        }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800 pb-12">
 
     <!-- Header / Navbar -->
-    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-3">
                 <div class="bg-amber-400 p-2 rounded-lg text-blue-900 font-extrabold text-xl shadow">
@@ -44,13 +47,13 @@
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-6">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8 space-y-6">
 
         <!-- Controls & Upload Section -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <!-- Step 1: Upload SF1 -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+            <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center space-x-2 text-blue-900 font-semibold mb-3">
                         <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs flex items-center justify-center font-bold">1</span>
@@ -59,7 +62,7 @@
                     <p class="text-xs text-slate-500 mb-4">Select the official School Form 1 (School Register) exported from LIS.</p>
                 </div>
                 
-                <label for="sf1File" class="relative border-2 border-dashed border-blue-300 rounded-xl p-6 text-center hover:bg-blue-50/50 hover:border-blue-500 transition-all cursor-pointer block">
+                <label for="sf1File" class="relative border-2 border-dashed border-blue-300 rounded-xl p-6 text-center hover:bg-blue-50/50 hover:border-blue-500 transition-all cursor-pointer block active:scale-[0.99]">
                     <input type="file" id="sf1File" accept=".xls,.xlsx" class="hidden" onchange="handleFileUpload(event)">
                     <i class="fa-solid fa-file-excel text-4xl text-emerald-600 mb-2"></i>
                     <p class="text-sm font-medium text-slate-700" id="uploadLabel">Click or Drag & Drop SF1 File</p>
@@ -68,7 +71,7 @@
             </div>
 
             <!-- Step 2: Select SF9 Format -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+            <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center space-x-2 text-blue-900 font-semibold mb-3">
                         <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs flex items-center justify-center font-bold">2</span>
@@ -91,7 +94,7 @@
             </div>
 
             <!-- Step 3: Export Action -->
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
+            <div class="bg-white p-5 sm:p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center space-x-2 text-blue-900 font-semibold mb-3">
                         <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs flex items-center justify-center font-bold">3</span>
@@ -100,7 +103,7 @@
                     <p class="text-xs text-slate-500 mb-4">Generates individual Word documents (.doc) for each learner packed in a single ZIP file.</p>
                 </div>
 
-                <button id="exportBtn" disabled onclick="exportBatchSF9()" class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                <button id="exportBtn" disabled onclick="exportBatchSF9()" class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
                     <i class="fa-solid fa-file-zipper text-lg"></i>
                     <span>Export SF9 Zip Package</span>
                 </button>
@@ -150,7 +153,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm text-slate-600">
+                <table class="w-full text-left text-sm text-slate-600 min-w-[640px]">
                     <thead class="bg-slate-50 text-slate-700 uppercase text-xs tracking-wider border-b border-slate-200">
                         <tr>
                             <th class="py-3.5 px-4 font-semibold">#</th>
@@ -160,7 +163,7 @@
                             <th class="py-3.5 px-4 font-semibold">Section</th>
                             <th class="py-3.5 px-4 font-semibold">Sex</th>
                             <th class="py-3.5 px-4 font-semibold">Age</th>
-                            <th class="py-3.5 px-4 font-semibold text-center">Action</th>
+                            <th class="py-3.5 px-4 font-semibold text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="learnersTableBody" class="divide-y divide-slate-200">
@@ -177,15 +180,20 @@
     </main>
 
     <!-- Modal Preview -->
-    <div id="previewModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
-            <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-slate-800 text-base" id="modalTitle">SF9 Document Preview</h3>
-                <button onclick="closePreviewModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
+    <div id="previewModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[92vh] flex flex-col overflow-hidden">
+            <div class="p-3.5 sm:p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-slate-800 text-sm sm:text-base truncate mr-2" id="modalTitle">SF9 Document Preview</h3>
+                <div class="flex items-center gap-2">
+                    <button id="modalDownloadBtn" onclick="downloadCurrentPreview()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-sm transition-colors">
+                        <i class="fa-solid fa-download"></i> <span>Download .doc</span>
+                    </button>
+                    <button onclick="closePreviewModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
             </div>
-            <div class="p-6 overflow-y-auto bg-slate-100 flex-1" id="modalBody">
+            <div class="p-4 sm:p-6 overflow-y-auto bg-slate-100 flex-1" id="modalBody">
                 <!-- Html document preview rendered here -->
             </div>
         </div>
@@ -194,6 +202,7 @@
     <!-- Application Script -->
     <script>
         let parsedLearners = [];
+        let activePreviewIndex = null;
         let classMetadata = {
             schoolName: '',
             schoolYear: '',
@@ -418,9 +427,14 @@
                     </td>
                     <td class="py-3 px-4 text-xs">${l.age || '-'}</td>
                     <td class="py-3 px-4 text-center">
-                        <button onclick="previewLearnerSF9(${index})" class="px-2.5 py-1 text-xs bg-slate-100 hover:bg-blue-50 text-blue-700 font-medium rounded-lg border border-slate-200 transition-colors">
-                            <i class="fa-regular fa-eye mr-1"></i> Preview
-                        </button>
+                        <div class="flex items-center justify-center gap-1.5">
+                            <button onclick="previewLearnerSF9(${index})" class="px-2.5 py-1.5 text-xs bg-slate-100 hover:bg-blue-50 text-blue-700 font-medium rounded-lg border border-slate-200 transition-colors flex items-center gap-1">
+                                <i class="fa-regular fa-eye"></i> <span class="hidden sm:inline">Preview</span>
+                            </button>
+                            <button onclick="downloadSingleLearnerSF9(${index})" class="px-2.5 py-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium rounded-lg border border-emerald-200 transition-colors flex items-center gap-1" title="Download Word Document">
+                                <i class="fa-solid fa-file-word"></i> <span class="hidden sm:inline">Download</span>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
@@ -894,16 +908,59 @@ h4 { font-size: 9pt; font-weight: bold; text-align: center; }
             const learner = parsedLearners[index];
             if (!learner) return;
 
+            activePreviewIndex = index;
             const sf9Type = document.getElementById('sf9Type').value;
             let docHtml = (sf9Type === '1-3') ? generateSF9_Grade1_3(learner) : generateSF9_Grade4_12(learner);
 
             document.getElementById('modalTitle').innerText = `SF9 Preview - ${learner.name} (${learner.lrn})`;
-            document.getElementById('modalBody').innerHTML = `<div class="bg-white p-4 shadow rounded border overflow-auto">${docHtml}</div>`;
+            document.getElementById('modalBody').innerHTML = `<div class="bg-white p-4 shadow rounded border overflow-x-auto">${docHtml}</div>`;
             document.getElementById('previewModal').classList.remove('hidden');
         }
 
         function closePreviewModal() {
             document.getElementById('previewModal').classList.add('hidden');
+            activePreviewIndex = null;
+        }
+
+        // Single Learner Document Exporter
+        function downloadSingleLearnerSF9(index) {
+            const learner = parsedLearners[index];
+            if (!learner) return;
+
+            const sf9Type = document.getElementById('sf9Type').value;
+            const docHtml = (sf9Type === '1-3') ? generateSF9_Grade1_3(learner) : generateSF9_Grade4_12(learner);
+            
+            const safeName = learner.name.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+            const filename = `SF9_${learner.lrn}_${safeName}.doc`;
+
+            triggerFileDownload(docHtml, filename, 'application/msword;charset=utf-8');
+        }
+
+        function downloadCurrentPreview() {
+            if (activePreviewIndex !== null) {
+                downloadSingleLearnerSF9(activePreviewIndex);
+            }
+        }
+
+        // Helper function for reliable cross-device file downloads
+        function triggerFileDownload(contentData, filename, mimeType) {
+            // Add UTF-8 Byte Order Mark (\ufeff) for compatibility with MS Word & Mobile Offices
+            const blob = new Blob(['\ufeff' + contentData], { type: mimeType });
+
+            if (typeof saveAs !== 'undefined') {
+                saveAs(blob, filename);
+            } else {
+                // Browser Fallback logic
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href);
+                }, 150);
+            }
         }
 
         async function exportBatchSF9() {
@@ -925,23 +982,29 @@ h4 { font-size: 9pt; font-weight: bold; text-align: center; }
 
                 parsedLearners.forEach((learner) => {
                     const docHtml = (sf9Type === '1-3') ? generateSF9_Grade1_3(learner) : generateSF9_Grade4_12(learner);
-                    // Clean filename: LRN_Name.doc (replacing special characters and commas with underscores)
                     const safeName = learner.name.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
                     const filename = `SF9_${learner.lrn}_${safeName}.doc`;
                     
-                    folder.file(filename, docHtml);
+                    // Include UTF-8 BOM in zipped files as well
+                    folder.file(filename, '\ufeff' + docHtml);
                 });
 
                 const content = await zip.generateAsync({ type: 'blob' });
                 const zipFilename = `${folderName}_SF9_Docs.zip`;
 
-                // Trigger Download
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(content);
-                link.download = zipFilename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                if (typeof saveAs !== 'undefined') {
+                    saveAs(content, zipFilename);
+                } else {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(content);
+                    link.download = zipFilename;
+                    document.body.appendChild(link);
+                    link.click();
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(link.href);
+                    }, 150);
+                }
 
             } catch (err) {
                 alert('Error generating ZIP package: ' + err.message);
