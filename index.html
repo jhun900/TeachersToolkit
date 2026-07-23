@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -73,16 +75,15 @@
                 <i class="fa-solid fa-id-card w-6 text-center mr-3 text-lg text-purple-500"></i>
                 <span class="truncate">SF9 Maker</span>
             </a>
-
-            <a href="#" onclick="loadTool('wap', 'Weekly Action Plan (WAP) with Credentials', 'WAP with credentials.html'); return false;" id="nav-wap" class="nav-item flex items-center px-3 py-3 text-sm font-medium text-slate-600 rounded-lg hover:bg-slate-50 hover:text-indigo-600 transition-colors">
-                <i class="fa-solid fa-clipboard-check w-6 text-center mr-3 text-lg text-amber-500"></i>
-                <span class="truncate">WAP with Credentials</span>
-            </a>
         </nav>
 
-        <!-- Footer / Repository Info -->
-        <div class="p-4 border-t border-slate-100 bg-slate-50/50">
-            <div class="flex items-center space-x-3 text-xs text-slate-500">
+        <!-- Footer / Facebook Link & Repository Info -->
+        <div class="p-4 border-t border-slate-100 bg-slate-50/50 space-y-3">
+            <a href="https://www.facebook.com/profile.php?id=61591560969191" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center space-x-2 w-full py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm active:scale-[0.98]">
+                <i class="fa-brands fa-facebook text-base"></i>
+                <span>Follow us on Facebook</span>
+            </a>
+            <div class="flex items-center space-x-3 text-xs text-slate-500 pt-1">
                 <i class="fa-brands fa-github text-base text-slate-700"></i>
                 <span class="truncate font-mono">GitHub Repository Hosted</span>
             </div>
@@ -104,8 +105,14 @@
             </div>
 
             <!-- Top Header Actions -->
-            <div id="topbar-actions" class="flex items-center space-x-2">
-                <!-- Dynamic actions inserted via JS when tool is loaded -->
+            <div class="flex items-center space-x-3">
+                <a href="https://www.facebook.com/profile.php?id=61591560969191" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm">
+                    <i class="fa-brands fa-facebook-f"></i>
+                    <span>Follow us on Facebook</span>
+                </a>
+                <div id="topbar-actions" class="flex items-center space-x-2">
+                    <!-- Dynamic actions inserted via JS when tool is loaded -->
+                </div>
             </div>
         </header>
 
@@ -131,7 +138,7 @@
                 <!-- Tools Grid -->
                 <div>
                     <h4 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Available Applications</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         
                         <!-- Tool Card 1: CRLA -->
                         <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all p-6 flex flex-col justify-between group">
@@ -144,7 +151,7 @@
                                 </div>
                                 <h5 class="text-lg font-bold text-slate-800 mb-2">CRLA-based Reading Intervention Plan Maker</h5>
                                 <p class="text-slate-500 text-sm leading-relaxed mb-4">
-                                    Comprehensive Comprehensive Rapid Literacy Assessment tool with Integrated Individual Learner Monitoring Plan (ILMP) generation.
+                                    Comprehensive Rapid Literacy Assessment tool with Integrated Individual Learner Monitoring Plan (ILMP) generation.
                                 </p>
                             </div>
                             <div class="flex items-center space-x-3 pt-4 border-t border-slate-100">
@@ -200,30 +207,6 @@
                                     Launch Tool
                                 </button>
                                 <a href="SF9 Maker.html" target="_blank" class="p-2.5 text-slate-400 hover:text-slate-600 border border-slate-200 hover:border-slate-300 rounded-lg transition-colors" title="Open in new window">
-                                    <i class="fa-solid fa-up-right-from-square"></i>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Tool Card 4: WAP -->
-                        <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all p-6 flex flex-col justify-between group">
-                            <div>
-                                <div class="flex items-center justify-between mb-4">
-                                    <div class="w-12 h-12 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">
-                                        <i class="fa-solid fa-clipboard-check"></i>
-                                    </div>
-                                    <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Planning</span>
-                                </div>
-                                <h5 class="text-lg font-bold text-slate-800 mb-2">WAP with Credentials</h5>
-                                <p class="text-slate-500 text-sm leading-relaxed mb-4">
-                                    Weekly Action Plan maker complete with credential verification and customizable teacher log templates.
-                                </p>
-                            </div>
-                            <div class="flex items-center space-x-3 pt-4 border-t border-slate-100">
-                                <button onclick="loadTool('wap', 'Weekly Action Plan (WAP) with Credentials', 'WAP with credentials.html')" class="flex-1 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold text-center transition-colors">
-                                    Launch Tool
-                                </button>
-                                <a href="WAP with credentials.html" target="_blank" class="p-2.5 text-slate-400 hover:text-slate-600 border border-slate-200 hover:border-slate-300 rounded-lg transition-colors" title="Open in new window">
                                     <i class="fa-solid fa-up-right-from-square"></i>
                                 </a>
                             </div>
