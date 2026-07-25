@@ -945,16 +945,20 @@ h4 { font-size: 9pt; font-weight: bold; text-align: center; }
 
         // Single Learner Document Exporter
         function downloadSingleLearnerSF9(index) {
-            const learner = parsedLearners[index];
-            if (!learner) return;
-
-            const sf9Type = document.getElementById('sf9Type').value;
-            const docHtml = (sf9Type === '1-3') ? generateSF9_Grade1_3(learner) : generateSF9_Grade4_12(learner);
+            alert("You will have to wait for at least 10 seconds before the file will be downloaded.");
             
-            const safeName = learner.name.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
-            const filename = `SF9_${learner.lrn}_${safeName}.doc`;
+            setTimeout(() => {
+                const learner = parsedLearners[index];
+                if (!learner) return;
 
-            triggerFileDownload(docHtml, filename, 'application/msword;charset=utf-8');
+                const sf9Type = document.getElementById('sf9Type').value;
+                const docHtml = (sf9Type === '1-3') ? generateSF9_Grade1_3(learner) : generateSF9_Grade4_12(learner);
+                
+                const safeName = learner.name.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+                const filename = `SF9_${learner.lrn}_${safeName}.doc`;
+
+                triggerFileDownload(docHtml, filename, 'application/msword;charset=utf-8');
+            }, 10000);
         }
 
         function downloadCurrentPreview() {
@@ -990,49 +994,54 @@ h4 { font-size: 9pt; font-weight: bold; text-align: center; }
                 return;
             }
 
+            alert("You will have to wait for at least 10 seconds before the file will be downloaded.");
+            
             const exportBtn = document.getElementById('exportBtn');
             const originalText = exportBtn.innerHTML;
             exportBtn.disabled = true;
-            exportBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-lg"></i> Packaging Zip...`;
+            exportBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-lg"></i> Waiting...`;
 
-            try {
-                const zip = new JSZip();
-                const sf9Type = document.getElementById('sf9Type').value;
-                const folderName = `SF9_${classMetadata.gradeLevel || 'Grade'}_${classMetadata.section || 'Section'}`.replace(/[^a-zA-Z0-9_-]/g, '_');
-                const folder = zip.folder(folderName);
+            setTimeout(async () => {
+                exportBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-lg"></i> Packaging Zip...`;
+                try {
+                    const zip = new JSZip();
+                    const sf9Type = document.getElementById('sf9Type').value;
+                    const folderName = `SF9_${classMetadata.gradeLevel || 'Grade'}_${classMetadata.section || 'Section'}`.replace(/[^a-zA-Z0-9_-]/g, '_');
+                    const folder = zip.folder(folderName);
 
-                parsedLearners.forEach((learner) => {
-                    const docHtml = (sf9Type === '1-3') ? generateSF9_Grade1_3(learner) : generateSF9_Grade4_12(learner);
-                    const safeName = learner.name.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
-                    const filename = `SF9_${learner.lrn}_${safeName}.doc`;
-                    
-                    // Include UTF-8 BOM in zipped files as well
-                    folder.file(filename, '\ufeff' + docHtml);
-                });
+                    parsedLearners.forEach((learner) => {
+                        const docHtml = (sf9Type === '1-3') ? generateSF9_Grade1_3(learner) : generateSF9_Grade4_12(learner);
+                        const safeName = learner.name.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+                        const filename = `SF9_${learner.lrn}_${safeName}.doc`;
+                        
+                        // Include UTF-8 BOM in zipped files as well
+                        folder.file(filename, '\ufeff' + docHtml);
+                    });
 
-                const content = await zip.generateAsync({ type: 'blob' });
-                const zipFilename = `${folderName}_SF9_Docs.zip`;
+                    const content = await zip.generateAsync({ type: 'blob' });
+                    const zipFilename = `${folderName}_SF9_Docs.zip`;
 
-                if (typeof saveAs !== 'undefined') {
-                    saveAs(content, zipFilename);
-                } else {
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(content);
-                    link.download = zipFilename;
-                    document.body.appendChild(link);
-                    link.click();
-                    setTimeout(() => {
-                        document.body.removeChild(link);
-                        URL.revokeObjectURL(link.href);
-                    }, 150);
+                    if (typeof saveAs !== 'undefined') {
+                        saveAs(content, zipFilename);
+                    } else {
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(content);
+                        link.download = zipFilename;
+                        document.body.appendChild(link);
+                        link.click();
+                        setTimeout(() => {
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(link.href);
+                        }, 150);
+                    }
+
+                } catch (err) {
+                    alert('Error generating ZIP package: ' + err.message);
+                } finally {
+                    exportBtn.disabled = false;
+                    exportBtn.innerHTML = originalText;
                 }
-
-            } catch (err) {
-                alert('Error generating ZIP package: ' + err.message);
-            } finally {
-                exportBtn.disabled = false;
-                exportBtn.innerHTML = originalText;
-            }
+            }, 10000);
         }
     </script>
 </body>
