@@ -167,6 +167,24 @@
         </section>
     </main>
 
+    <!-- Download Interstitial Ad Modal -->
+    <div id="ad-modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col h-[80vh]">
+            <div class="p-4 bg-gray-100 flex justify-between items-center border-b">
+                <h3 class="font-bold text-gray-800 text-lg">Please wait <span id="ad-timer" class="text-blue-600 font-extrabold">10</span> seconds...</h3>
+            </div>
+            <!-- Smartlink Ad Iframe -->
+            <div class="flex-grow w-full bg-gray-50 relative">
+                <iframe src="https://www.effectivecpmnetwork.com/b37fivb0de?key=34a1b9fcb04bd9d6ee7b44b16aeb15cb" class="absolute inset-0 w-full h-full border-none" allow="autoplay; encrypted-media"></iframe>
+            </div>
+            <div class="p-4 bg-gray-100 border-t flex justify-center items-center h-20">
+                <button id="continue-download-btn" class="hidden bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all transform hover:scale-105">
+                    Click to continue download
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ==========================================
         // 🔑 MISTRAL API KEY
@@ -177,6 +195,46 @@
         let finalPlanData = [];
         let finalILMPData = [];
         let currentPlanType = "";
+
+        // ==========================================
+        // Smartlink Ad Interstitial Logic
+        // ==========================================
+        let pendingDownloadAction = null;
+        let adCountdownInterval = null;
+
+        function triggerAdModal(callback) {
+            pendingDownloadAction = callback;
+            const modal = document.getElementById('ad-modal');
+            const timerSpan = document.getElementById('ad-timer');
+            const continueBtn = document.getElementById('continue-download-btn');
+            
+            // Reset UI state
+            modal.classList.remove('hidden');
+            continueBtn.classList.add('hidden');
+            
+            let timeLeft = 10;
+            timerSpan.innerText = timeLeft;
+            
+            adCountdownInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    timerSpan.innerText = timeLeft;
+                } else {
+                    clearInterval(adCountdownInterval);
+                    timerSpan.innerText = "0";
+                    continueBtn.classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        // Complete the download when continuing
+        document.getElementById('continue-download-btn').addEventListener('click', function() {
+            document.getElementById('ad-modal').classList.add('hidden');
+            if (pendingDownloadAction) {
+                pendingDownloadAction(); // Run the actual export function
+                pendingDownloadAction = null;
+            }
+        });
 
         // Safe String formatter
         function safeString(val) {
@@ -191,11 +249,13 @@
 
         // Global Event Listeners for dynamic exporting
         document.getElementById('export-btn').addEventListener('click', function() {
-            if (currentPlanType === 'institutional') {
-                exportInstitutionalPlan();
-            } else if (currentPlanType === 'grade-level') {
-                exportGradeLevelPlanWord();
-            }
+            triggerAdModal(() => {
+                if (currentPlanType === 'institutional') {
+                    exportInstitutionalPlan();
+                } else if (currentPlanType === 'grade-level') {
+                    exportGradeLevelPlanWord();
+                }
+            });
         });
 
         document.getElementById('export-ilmp-btn').addEventListener('click', async function() {
@@ -212,12 +272,12 @@
                 
                 if (finalILMPData && finalILMPData.length > 0) {
                     ilmpBtn.innerHTML = "Export ILMP (ZIP)";
-                    exportILMP();
+                    triggerAdModal(exportILMP);
                 } else {
                     ilmpBtn.innerHTML = "Retry ILMP Generation";
                 }
             } else {
-                exportILMP();
+                triggerAdModal(exportILMP);
             }
         });
 
