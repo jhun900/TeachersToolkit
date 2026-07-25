@@ -103,13 +103,13 @@
                     <p class="text-xs text-slate-500 mb-4">Generates individual Word documents (.doc) for each learner packed in a single ZIP file.</p>
                 </div>
 
-                <!-- Wrapped Export Button -->
-                <a id="exportWrapper" href="https://www.effectivecpmnetwork.com/mx4wafxih8?key=c0b484c04a7bfe5bea6ea7eb111800a0" target="_blank" rel="noopener noreferrer" class="block w-full pointer-events-none">
+                <!-- Export Wrapper (Div instead of anchor to prevent redirect while retaining JS functionality) -->
+                <div id="exportWrapper" class="block w-full pointer-events-none">
                     <button id="exportBtn" disabled onclick="exportBatchSF9()" class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
                         <i class="fa-solid fa-file-zipper text-lg"></i>
                         <span>Export SF9 Zip Package</span>
                     </button>
-                </a>
+                </div>
             </div>
         </div>
 
@@ -189,12 +189,9 @@
                 <h3 class="font-bold text-slate-800 text-sm sm:text-base truncate mr-2" id="modalTitle">SF9 Document Preview</h3>
                 <div class="flex items-center gap-2">
                     
-                    <!-- Wrapped Modal Download Button -->
-                    <a href="https://www.effectivecpmnetwork.com/mx4wafxih8?key=c0b484c04a7bfe5bea6ea7eb111800a0" target="_blank" rel="noopener noreferrer">
-                        <button id="modalDownloadBtn" onclick="downloadCurrentPreview()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-sm transition-colors">
-                            <i class="fa-solid fa-download"></i> <span>Download .doc</span>
-                        </button>
-                    </a>
+                    <button id="modalDownloadBtn" onclick="downloadCurrentPreview()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-sm transition-colors">
+                        <i class="fa-solid fa-download"></i> <span>Download .doc</span>
+                    </button>
 
                     <button onclick="closePreviewModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg">
                         <i class="fa-solid fa-xmark text-xl"></i>
@@ -207,10 +204,31 @@
         </div>
     </div>
 
+    <!-- Ad/Download Waiting Modal -->
+    <div id="adModal" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center">
+            <h3 class="font-bold text-slate-800 text-lg mb-2">Preparing your download...</h3>
+            <p class="text-sm text-slate-500 mb-6">Please support our sponsors while you wait.</p>
+            
+            <!-- Ad Placement Block -->
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6 flex flex-col items-center justify-center">
+                <span class="text-xs text-slate-400 uppercase tracking-wider font-bold mb-2">Advertisement</span>
+                <a href="https://www.effectivecpmnetwork.com/mx4wafxih8?key=c0b484c04a7bfe5bea6ea7eb111800a0" target="_blank" class="text-blue-600 hover:text-blue-700 font-semibold underline text-sm block px-4 py-2">
+                    Click here to check out our sponsor!
+                </a>
+            </div>
+
+            <button id="adContinueBtn" disabled class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                <span>Please wait <span id="adTimer">5</span>s...</span>
+            </button>
+        </div>
+    </div>
+
     <!-- Application Script -->
     <script>
         let parsedLearners = [];
         let activePreviewIndex = null;
+        let pendingDownloadCallback = null;
         let classMetadata = {
             schoolName: '',
             schoolYear: '',
@@ -220,6 +238,39 @@
             division: '',
             district: ''
         };
+
+        // Core Ad Page / Timer Logic
+        function showAdPage(callback) {
+            pendingDownloadCallback = callback;
+            const modal = document.getElementById('adModal');
+            const btn = document.getElementById('adContinueBtn');
+            const timerSpan = document.getElementById('adTimer');
+            
+            modal.classList.remove('hidden');
+            btn.disabled = true;
+            
+            let timeLeft = 5;
+            btn.innerHTML = `<span>Please wait <span id="adTimer">${timeLeft}</span>s...</span>`;
+            
+            const interval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    document.getElementById('adTimer').innerText = timeLeft;
+                } else {
+                    clearInterval(interval);
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>Continue to Download</span> <i class="fa-solid fa-arrow-right"></i>`;
+                }
+            }, 1000);
+
+            btn.onclick = function() {
+                modal.classList.add('hidden');
+                if (pendingDownloadCallback) {
+                    pendingDownloadCallback();
+                    pendingDownloadCallback = null;
+                }
+            };
+        }
 
         document.getElementById('sf9Type').addEventListener('change', function() {
             const val = this.value;
@@ -294,7 +345,7 @@
                 }
             }
 
-            // 2. Identify Column Indices for Learner Details with strict exclusion of parent/guardian names
+            // 2. Identify Column Indices for Learner Details
             let lrnCol = 0;
             let nameCol = 2;
             let sexCol = 6;
@@ -343,7 +394,6 @@
 
                     let ageVal = String(row[ageCol] || '').trim();
                     if (!/^\d+$/.test(ageVal) || parseInt(ageVal) < 3 || parseInt(ageVal) > 30) {
-                        // Look in neighboring columns for a valid age digit
                         for (let offset of [-1, 1, -2, 2, 3, -3]) {
                             const idx = ageCol + offset;
                             if (idx >= 0 && idx < row.length) {
@@ -397,7 +447,7 @@
             document.getElementById('learnerCountTag').innerText = `${parsedLearners.length} Learners Loaded`;
             document.getElementById('exportBtn').disabled = !isExportEnabled;
             
-            // Toggle pointer-events on the smartlink wrapper so it isn't clickable when export is disabled
+            // Toggle pointer-events on the wrapper so it isn't clickable when export is disabled
             const exportWrapper = document.getElementById('exportWrapper');
             if(isExportEnabled) {
                 exportWrapper.classList.remove('pointer-events-none');
@@ -449,12 +499,9 @@
                                 <i class="fa-regular fa-eye"></i> <span class="hidden sm:inline">Preview</span>
                             </button>
                             
-                            <!-- Wrapped Table Individual Download Button -->
-                            <a href="https://www.effectivecpmnetwork.com/mx4wafxih8?key=c0b484c04a7bfe5bea6ea7eb111800a0" target="_blank" rel="noopener noreferrer">
-                                <button onclick="downloadSingleLearnerSF9(${index})" class="px-2.5 py-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium rounded-lg border border-emerald-200 transition-colors flex items-center gap-1" title="Download Word Document">
-                                    <i class="fa-solid fa-file-word"></i> <span class="hidden sm:inline">Download</span>
-                                </button>
-                            </a>
+                            <button onclick="downloadSingleLearnerSF9(${index})" class="px-2.5 py-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium rounded-lg border border-emerald-200 transition-colors flex items-center gap-1" title="Download Word Document">
+                                <i class="fa-solid fa-file-word"></i> <span class="hidden sm:inline">Download</span>
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -945,9 +992,7 @@ h4 { font-size: 9pt; font-weight: bold; text-align: center; }
 
         // Single Learner Document Exporter
         function downloadSingleLearnerSF9(index) {
-            alert("You will have to wait for at least 10 seconds before the file will be downloaded.");
-            
-            setTimeout(() => {
+            showAdPage(() => {
                 const learner = parsedLearners[index];
                 if (!learner) return;
 
@@ -958,7 +1003,7 @@ h4 { font-size: 9pt; font-weight: bold; text-align: center; }
                 const filename = `SF9_${learner.lrn}_${safeName}.doc`;
 
                 triggerFileDownload(docHtml, filename, 'application/msword;charset=utf-8');
-            }, 10000);
+            });
         }
 
         function downloadCurrentPreview() {
@@ -994,15 +1039,12 @@ h4 { font-size: 9pt; font-weight: bold; text-align: center; }
                 return;
             }
 
-            alert("You will have to wait for at least 10 seconds before the file will be downloaded.");
-            
-            const exportBtn = document.getElementById('exportBtn');
-            const originalText = exportBtn.innerHTML;
-            exportBtn.disabled = true;
-            exportBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-lg"></i> Waiting...`;
-
-            setTimeout(async () => {
+            showAdPage(async () => {
+                const exportBtn = document.getElementById('exportBtn');
+                const originalText = exportBtn.innerHTML;
+                exportBtn.disabled = true;
                 exportBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-lg"></i> Packaging Zip...`;
+
                 try {
                     const zip = new JSZip();
                     const sf9Type = document.getElementById('sf9Type').value;
@@ -1041,7 +1083,7 @@ h4 { font-size: 9pt; font-weight: bold; text-align: center; }
                     exportBtn.disabled = false;
                     exportBtn.innerHTML = originalText;
                 }
-            }, 10000);
+            });
         }
     </script>
 </body>
