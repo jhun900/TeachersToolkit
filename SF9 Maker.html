@@ -103,13 +103,13 @@
                     <p class="text-xs text-slate-500 mb-4">Generates individual Word documents (.doc) for each learner packed in a single ZIP file.</p>
                 </div>
 
-                <!-- Wrapped Export Button -->
-                <a id="exportWrapper" href="https://www.effectivecpmnetwork.com/mx4wafxih8?key=c0b484c04a7bfe5bea6ea7eb111800a0" target="_blank" rel="noopener noreferrer" class="block w-full pointer-events-none">
+                <!-- Export Button Wrapper changed to div so it doesn't open a link -->
+                <div id="exportWrapper" class="block w-full pointer-events-none">
                     <button id="exportBtn" disabled onclick="exportBatchSF9()" class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
                         <i class="fa-solid fa-file-zipper text-lg"></i>
                         <span>Export SF9 Zip Package</span>
                     </button>
-                </a>
+                </div>
             </div>
         </div>
 
@@ -189,12 +189,10 @@
                 <h3 class="font-bold text-slate-800 text-sm sm:text-base truncate mr-2" id="modalTitle">SF9 Document Preview</h3>
                 <div class="flex items-center gap-2">
                     
-                    <!-- Wrapped Modal Download Button -->
-                    <a href="https://www.effectivecpmnetwork.com/mx4wafxih8?key=c0b484c04a7bfe5bea6ea7eb111800a0" target="_blank" rel="noopener noreferrer">
-                        <button id="modalDownloadBtn" onclick="downloadCurrentPreview()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-sm transition-colors">
-                            <i class="fa-solid fa-download"></i> <span>Download .doc</span>
-                        </button>
-                    </a>
+                    <!-- Anchor tag removed -->
+                    <button id="modalDownloadBtn" onclick="downloadCurrentPreview()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-sm transition-colors">
+                        <i class="fa-solid fa-download"></i> <span>Download .doc</span>
+                    </button>
 
                     <button onclick="closePreviewModal()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg">
                         <i class="fa-solid fa-xmark text-xl"></i>
@@ -207,10 +205,31 @@
         </div>
     </div>
 
+    <!-- Ad Interstitial Overlay -->
+    <div id="adOverlay" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md z-[9999] hidden flex-col items-center justify-center p-4">
+        <h2 class="text-2xl font-bold text-white mb-6">Preparing Your File...</h2>
+        
+        <!-- Ad Container -->
+        <div class="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-2xl h-[300px] mb-6 relative">
+            <div class="absolute top-0 left-0 bg-amber-400 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-br-lg z-10">ADVERTISEMENT</div>
+            <!-- Embedded Ad iframe -->
+            <iframe src="https://www.effectivecpmnetwork.com/mx4wafxih8?key=c0b484c04a7bfe5bea6ea7eb111800a0" width="100%" height="100%" frameborder="0" scrolling="yes"></iframe>
+        </div>
+
+        <div id="countdownText" class="text-lg text-slate-300 mb-6">
+            Your download will be ready in <span id="countdownTimer" class="font-bold text-amber-400 text-2xl mx-1">10</span> seconds.
+        </div>
+        
+        <button id="finalDownloadBtn" class="hidden px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95 flex items-center gap-2">
+            <i class="fa-solid fa-circle-down text-xl"></i> Click to Download File
+        </button>
+    </div>
+
     <!-- Application Script -->
     <script>
         let parsedLearners = [];
         let activePreviewIndex = null;
+        let pendingDownloadAction = null;
         let classMetadata = {
             schoolName: '',
             schoolYear: '',
@@ -220,6 +239,48 @@
             division: '',
             district: ''
         };
+
+        // --- Ad Overlay & Countdown Logic ---
+        function initiateDownloadWithAd(actionCallback) {
+            pendingDownloadAction = actionCallback;
+            const overlay = document.getElementById('adOverlay');
+            const timerSpan = document.getElementById('countdownTimer');
+            const textDisplay = document.getElementById('countdownText');
+            const finalBtn = document.getElementById('finalDownloadBtn');
+            
+            // Reset overlay state
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            textDisplay.classList.remove('hidden');
+            finalBtn.classList.add('hidden');
+            
+            let timeLeft = 10;
+            timerSpan.innerText = timeLeft;
+
+            const interval = setInterval(() => {
+                timeLeft--;
+                timerSpan.innerText = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(interval);
+                    textDisplay.classList.add('hidden');
+                    finalBtn.classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        // Execute download when final button is clicked
+        document.getElementById('finalDownloadBtn').addEventListener('click', () => {
+            const overlay = document.getElementById('adOverlay');
+            overlay.classList.remove('flex');
+            overlay.classList.add('hidden');
+            
+            if (pendingDownloadAction) {
+                pendingDownloadAction();
+                pendingDownloadAction = null;
+            }
+        });
+        // ------------------------------------
 
         document.getElementById('sf9Type').addEventListener('change', function() {
             const val = this.value;
@@ -430,6 +491,7 @@
                 return;
             }
 
+            // Anchor tags removed around download single buttons
             tbody.innerHTML = parsedLearners.map((l, index) => `
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="py-3 px-4 text-xs font-bold text-slate-400">${index + 1}</td>
@@ -449,12 +511,9 @@
                                 <i class="fa-regular fa-eye"></i> <span class="hidden sm:inline">Preview</span>
                             </button>
                             
-                            <!-- Wrapped Table Download Button -->
-                            <a href="https://www.effectivecpmnetwork.com/mx4wafxih8?key=c0b484c04a7bfe5bea6ea7eb111800a0" target="_blank" rel="noopener noreferrer">
-                                <button onclick="downloadSingleLearnerSF9(${index})" class="px-2.5 py-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium rounded-lg border border-emerald-200 transition-colors flex items-center gap-1" title="Download Word Document">
-                                    <i class="fa-solid fa-file-word"></i> <span class="hidden sm:inline">Download</span>
-                                </button>
-                            </a>
+                            <button onclick="downloadSingleLearnerSF9(${index})" class="px-2.5 py-1.5 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium rounded-lg border border-emerald-200 transition-colors flex items-center gap-1" title="Download Word Document">
+                                <i class="fa-solid fa-file-word"></i> <span class="hidden sm:inline">Download</span>
+                            </button>
                         </div>
                     </td>
                 </tr>
@@ -943,18 +1002,20 @@ h4 { font-size: 9pt; font-weight: bold; text-align: center; }
             activePreviewIndex = null;
         }
 
-        // Single Learner Document Exporter
+        // Replaced timeout alert with ad interstitial for Single Learner Document
         function downloadSingleLearnerSF9(index) {
-            const learner = parsedLearners[index];
-            if (!learner) return;
+            initiateDownloadWithAd(() => {
+                const learner = parsedLearners[index];
+                if (!learner) return;
 
-            const sf9Type = document.getElementById('sf9Type').value;
-            const docHtml = (sf9Type === '1-3') ? generateSF9_Grade1_3(learner) : generateSF9_Grade4_12(learner);
-            
-            const safeName = learner.name.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
-            const filename = `SF9_${learner.lrn}_${safeName}.doc`;
+                const sf9Type = document.getElementById('sf9Type').value;
+                const docHtml = (sf9Type === '1-3') ? generateSF9_Grade1_3(learner) : generateSF9_Grade4_12(learner);
+                
+                const safeName = learner.name.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+                const filename = `SF9_${learner.lrn}_${safeName}.doc`;
 
-            triggerFileDownload(docHtml, filename, 'application/msword;charset=utf-8');
+                triggerFileDownload(docHtml, filename, 'application/msword;charset=utf-8');
+            });
         }
 
         function downloadCurrentPreview() {
@@ -984,55 +1045,58 @@ h4 { font-size: 9pt; font-weight: bold; text-align: center; }
             }
         }
 
+        // Replaced timeout alert with ad interstitial for Batch Export
         async function exportBatchSF9() {
             if (parsedLearners.length === 0) {
                 alert('No learner records available to export.');
                 return;
             }
 
-            const exportBtn = document.getElementById('exportBtn');
-            const originalText = exportBtn.innerHTML;
-            exportBtn.disabled = true;
-            exportBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-lg"></i> Packaging Zip...`;
+            initiateDownloadWithAd(async () => {
+                const exportBtn = document.getElementById('exportBtn');
+                const originalText = exportBtn.innerHTML;
+                exportBtn.disabled = true;
+                exportBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-lg"></i> Packaging Zip...`;
 
-            try {
-                const zip = new JSZip();
-                const sf9Type = document.getElementById('sf9Type').value;
-                const folderName = `SF9_${classMetadata.gradeLevel || 'Grade'}_${classMetadata.section || 'Section'}`.replace(/[^a-zA-Z0-9_-]/g, '_');
-                const folder = zip.folder(folderName);
+                try {
+                    const zip = new JSZip();
+                    const sf9Type = document.getElementById('sf9Type').value;
+                    const folderName = `SF9_${classMetadata.gradeLevel || 'Grade'}_${classMetadata.section || 'Section'}`.replace(/[^a-zA-Z0-9_-]/g, '_');
+                    const folder = zip.folder(folderName);
 
-                parsedLearners.forEach((learner) => {
-                    const docHtml = (sf9Type === '1-3') ? generateSF9_Grade1_3(learner) : generateSF9_Grade4_12(learner);
-                    const safeName = learner.name.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
-                    const filename = `SF9_${learner.lrn}_${safeName}.doc`;
-                    
-                    // Include UTF-8 BOM in zipped files as well
-                    folder.file(filename, '\ufeff' + docHtml);
-                });
+                    parsedLearners.forEach((learner) => {
+                        const docHtml = (sf9Type === '1-3') ? generateSF9_Grade1_3(learner) : generateSF9_Grade4_12(learner);
+                        const safeName = learner.name.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+                        const filename = `SF9_${learner.lrn}_${safeName}.doc`;
+                        
+                        // Include UTF-8 BOM in zipped files as well
+                        folder.file(filename, '\ufeff' + docHtml);
+                    });
 
-                const content = await zip.generateAsync({ type: 'blob' });
-                const zipFilename = `${folderName}_SF9_Docs.zip`;
+                    const content = await zip.generateAsync({ type: 'blob' });
+                    const zipFilename = `${folderName}_SF9_Docs.zip`;
 
-                if (typeof saveAs !== 'undefined') {
-                    saveAs(content, zipFilename);
-                } else {
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(content);
-                    link.download = zipFilename;
-                    document.body.appendChild(link);
-                    link.click();
-                    setTimeout(() => {
-                        document.body.removeChild(link);
-                        URL.revokeObjectURL(link.href);
-                    }, 150);
+                    if (typeof saveAs !== 'undefined') {
+                        saveAs(content, zipFilename);
+                    } else {
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(content);
+                        link.download = zipFilename;
+                        document.body.appendChild(link);
+                        link.click();
+                        setTimeout(() => {
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(link.href);
+                        }, 150);
+                    }
+
+                } catch (err) {
+                    alert('Error generating ZIP package: ' + err.message);
+                } finally {
+                    exportBtn.disabled = false;
+                    exportBtn.innerHTML = originalText;
                 }
-
-            } catch (err) {
-                alert('Error generating ZIP package: ' + err.message);
-            } finally {
-                exportBtn.disabled = false;
-                exportBtn.innerHTML = originalText;
-            }
+            });
         }
     </script>
 </body>
