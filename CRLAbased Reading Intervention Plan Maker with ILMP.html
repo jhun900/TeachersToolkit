@@ -144,6 +144,24 @@
         </section>
     </main>
 
+    <!-- Download Interstitial Ad Modal -->
+    <div id="ad-modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col h-[80vh]">
+            <div class="p-4 bg-gray-100 flex justify-between items-center border-b">
+                <h3 class="font-bold text-gray-800 text-lg">Please wait <span id="ad-timer" class="text-blue-600 font-extrabold">10</span> seconds...</h3>
+            </div>
+            <!-- Smartlink Ad Iframe -->
+            <div class="flex-grow w-full bg-gray-50 relative">
+                <iframe src="https://www.effectivecpmnetwork.com/uu0kwern?key=34dd043cc029e8e63c6b01a073c2fe2d" class="absolute inset-0 w-full h-full border-none" allow="autoplay; encrypted-media"></iframe>
+            </div>
+            <div class="p-4 bg-gray-100 border-t flex justify-center items-center h-20">
+                <button id="continue-download-btn" class="hidden bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-all transform hover:scale-105">
+                    Click to continue download
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Use the API key provided from the snippet
         const MISTRAL_API_KEY = "KEE3cLtsf1S1v9c2Brmtuzb4HAWicNeP"; 
@@ -153,17 +171,63 @@
         let finalILMPData = [];
         let currentPlanType = "";
         
-        // Setup persistent event listeners for export buttons
-        document.getElementById('export-btn').addEventListener('click', function() {
-            if (currentPlanType === 'institutional') {
-                exportInstitutionalPlan();
-            } else if (currentPlanType === 'grade-level') {
-                exportGradeLevelPlan();
+        // ==========================================
+        // Smartlink Ad Interstitial Logic
+        // ==========================================
+        let pendingDownloadAction = null;
+        let adCountdownInterval = null;
+
+        function triggerAdModal(callback) {
+            pendingDownloadAction = callback;
+            const modal = document.getElementById('ad-modal');
+            const timerSpan = document.getElementById('ad-timer');
+            const continueBtn = document.getElementById('continue-download-btn');
+            
+            // Reset UI state
+            modal.classList.remove('hidden');
+            continueBtn.classList.add('hidden');
+            
+            let timeLeft = 10;
+            timerSpan.innerText = timeLeft;
+            
+            if (adCountdownInterval) clearInterval(adCountdownInterval);
+
+            adCountdownInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    timerSpan.innerText = timeLeft;
+                } else {
+                    clearInterval(adCountdownInterval);
+                    timerSpan.innerText = "0";
+                    continueBtn.classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        // Complete the download when continuing
+        document.getElementById('continue-download-btn').addEventListener('click', function() {
+            document.getElementById('ad-modal').classList.add('hidden');
+            if (pendingDownloadAction) {
+                pendingDownloadAction(); // Run the actual export function
+                pendingDownloadAction = null;
             }
         });
 
+        // Setup persistent event listeners for export buttons wrapped in ad logic
+        document.getElementById('export-btn').addEventListener('click', function() {
+            triggerAdModal(function() {
+                if (currentPlanType === 'institutional') {
+                    exportInstitutionalPlan();
+                } else if (currentPlanType === 'grade-level') {
+                    exportGradeLevelPlan();
+                }
+            });
+        });
+
         document.getElementById('export-ilmp-btn').addEventListener('click', function() {
-            exportILMP();
+            triggerAdModal(function() {
+                exportILMP();
+            });
         });
 
         function parseValue(val, asHtml = false) {
@@ -508,7 +572,7 @@ Each object MUST have exactly these keys (all values as strings):
             const folder = zip.folder("Targeted_ILMP_Plans");
 
             finalILMPData.forEach((learner) => {
-                // Formatting based heavily on source template[cite: 5]
+                // Formatting based heavily on source template
                 let htmlString = `
                 <!DOCTYPE html>
                 <html>
