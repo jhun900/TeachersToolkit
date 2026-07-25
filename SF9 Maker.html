@@ -103,7 +103,7 @@
                     <p class="text-xs text-slate-500 mb-4">Generates individual Word documents (.doc) for each learner packed in a single ZIP file.</p>
                 </div>
 
-                <!-- Export Wrapper (Div instead of anchor to prevent redirect while retaining JS functionality) -->
+                <!-- Export Button Wrapper changed to div so it doesn't open a link -->
                 <div id="exportWrapper" class="block w-full pointer-events-none">
                     <button id="exportBtn" disabled onclick="exportBatchSF9()" class="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
                         <i class="fa-solid fa-file-zipper text-lg"></i>
@@ -189,6 +189,7 @@
                 <h3 class="font-bold text-slate-800 text-sm sm:text-base truncate mr-2" id="modalTitle">SF9 Document Preview</h3>
                 <div class="flex items-center gap-2">
                     
+                    <!-- Anchor tag removed -->
                     <button id="modalDownloadBtn" onclick="downloadCurrentPreview()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-sm transition-colors">
                         <i class="fa-solid fa-download"></i> <span>Download .doc</span>
                     </button>
@@ -204,31 +205,31 @@
         </div>
     </div>
 
-    <!-- Ad/Download Waiting Modal -->
-    <div id="adModal" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center">
-            <h3 class="font-bold text-slate-800 text-lg mb-2">Preparing your download...</h3>
-            <p class="text-sm text-slate-500 mb-6">Please support our sponsors while you wait.</p>
-            
-            <!-- Ad Placement Block -->
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6 flex flex-col items-center justify-center">
-                <span class="text-xs text-slate-400 uppercase tracking-wider font-bold mb-2">Advertisement</span>
-                <a href="https://www.effectivecpmnetwork.com/mx4wafxih8?key=c0b484c04a7bfe5bea6ea7eb111800a0" target="_blank" class="text-blue-600 hover:text-blue-700 font-semibold underline text-sm block px-4 py-2">
-                    Click here to check out our sponsor!
-                </a>
-            </div>
-
-            <button id="adContinueBtn" disabled class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
-                <span>Please wait <span id="adTimer">5</span>s...</span>
-            </button>
+    <!-- Ad Interstitial Overlay -->
+    <div id="adOverlay" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md z-[9999] hidden flex-col items-center justify-center p-4">
+        <h2 class="text-2xl font-bold text-white mb-6">Preparing Your File...</h2>
+        
+        <!-- Ad Container -->
+        <div class="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-2xl h-[300px] mb-6 relative">
+            <div class="absolute top-0 left-0 bg-amber-400 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded-br-lg z-10">ADVERTISEMENT</div>
+            <!-- Embedded Ad iframe -->
+            <iframe src="https://www.effectivecpmnetwork.com/mx4wafxih8?key=c0b484c04a7bfe5bea6ea7eb111800a0" width="100%" height="100%" frameborder="0" scrolling="yes"></iframe>
         </div>
+
+        <div id="countdownText" class="text-lg text-slate-300 mb-6">
+            Your download will be ready in <span id="countdownTimer" class="font-bold text-amber-400 text-2xl mx-1">10</span> seconds.
+        </div>
+        
+        <button id="finalDownloadBtn" class="hidden px-8 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg transition-transform hover:scale-105 active:scale-95 flex items-center gap-2">
+            <i class="fa-solid fa-circle-down text-xl"></i> Click to Download File
+        </button>
     </div>
 
     <!-- Application Script -->
     <script>
         let parsedLearners = [];
         let activePreviewIndex = null;
-        let pendingDownloadCallback = null;
+        let pendingDownloadAction = null;
         let classMetadata = {
             schoolName: '',
             schoolYear: '',
@@ -239,38 +240,47 @@
             district: ''
         };
 
-        // Core Ad Page / Timer Logic
-        function showAdPage(callback) {
-            pendingDownloadCallback = callback;
-            const modal = document.getElementById('adModal');
-            const btn = document.getElementById('adContinueBtn');
-            const timerSpan = document.getElementById('adTimer');
+        // --- Ad Overlay & Countdown Logic ---
+        function initiateDownloadWithAd(actionCallback) {
+            pendingDownloadAction = actionCallback;
+            const overlay = document.getElementById('adOverlay');
+            const timerSpan = document.getElementById('countdownTimer');
+            const textDisplay = document.getElementById('countdownText');
+            const finalBtn = document.getElementById('finalDownloadBtn');
             
-            modal.classList.remove('hidden');
-            btn.disabled = true;
+            // Reset overlay state
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            textDisplay.classList.remove('hidden');
+            finalBtn.classList.add('hidden');
             
-            let timeLeft = 5;
-            btn.innerHTML = `<span>Please wait <span id="adTimer">${timeLeft}</span>s...</span>`;
-            
+            let timeLeft = 10;
+            timerSpan.innerText = timeLeft;
+
             const interval = setInterval(() => {
                 timeLeft--;
-                if (timeLeft > 0) {
-                    document.getElementById('adTimer').innerText = timeLeft;
-                } else {
+                timerSpan.innerText = timeLeft;
+
+                if (timeLeft <= 0) {
                     clearInterval(interval);
-                    btn.disabled = false;
-                    btn.innerHTML = `<span>Continue to Download</span> <i class="fa-solid fa-arrow-right"></i>`;
+                    textDisplay.classList.add('hidden');
+                    finalBtn.classList.remove('hidden');
                 }
             }, 1000);
-
-            btn.onclick = function() {
-                modal.classList.add('hidden');
-                if (pendingDownloadCallback) {
-                    pendingDownloadCallback();
-                    pendingDownloadCallback = null;
-                }
-            };
         }
+
+        // Execute download when final button is clicked
+        document.getElementById('finalDownloadBtn').addEventListener('click', () => {
+            const overlay = document.getElementById('adOverlay');
+            overlay.classList.remove('flex');
+            overlay.classList.add('hidden');
+            
+            if (pendingDownloadAction) {
+                pendingDownloadAction();
+                pendingDownloadAction = null;
+            }
+        });
+        // ------------------------------------
 
         document.getElementById('sf9Type').addEventListener('change', function() {
             const val = this.value;
@@ -345,7 +355,7 @@
                 }
             }
 
-            // 2. Identify Column Indices for Learner Details
+            // 2. Identify Column Indices for Learner Details with strict exclusion of parent/guardian names
             let lrnCol = 0;
             let nameCol = 2;
             let sexCol = 6;
@@ -394,6 +404,7 @@
 
                     let ageVal = String(row[ageCol] || '').trim();
                     if (!/^\d+$/.test(ageVal) || parseInt(ageVal) < 3 || parseInt(ageVal) > 30) {
+                        // Look in neighboring columns for a valid age digit
                         for (let offset of [-1, 1, -2, 2, 3, -3]) {
                             const idx = ageCol + offset;
                             if (idx >= 0 && idx < row.length) {
@@ -447,7 +458,7 @@
             document.getElementById('learnerCountTag').innerText = `${parsedLearners.length} Learners Loaded`;
             document.getElementById('exportBtn').disabled = !isExportEnabled;
             
-            // Toggle pointer-events on the wrapper so it isn't clickable when export is disabled
+            // Toggle pointer-events on the smartlink wrapper so it isn't clickable when export is disabled
             const exportWrapper = document.getElementById('exportWrapper');
             if(isExportEnabled) {
                 exportWrapper.classList.remove('pointer-events-none');
@@ -480,6 +491,7 @@
                 return;
             }
 
+            // Anchor tags removed around download single buttons
             tbody.innerHTML = parsedLearners.map((l, index) => `
                 <tr class="hover:bg-slate-50 transition-colors">
                     <td class="py-3 px-4 text-xs font-bold text-slate-400">${index + 1}</td>
@@ -990,9 +1002,9 @@ h4 { font-size: 9pt; font-weight: bold; text-align: center; }
             activePreviewIndex = null;
         }
 
-        // Single Learner Document Exporter
+        // Replaced timeout alert with ad interstitial for Single Learner Document
         function downloadSingleLearnerSF9(index) {
-            showAdPage(() => {
+            initiateDownloadWithAd(() => {
                 const learner = parsedLearners[index];
                 if (!learner) return;
 
@@ -1033,13 +1045,14 @@ h4 { font-size: 9pt; font-weight: bold; text-align: center; }
             }
         }
 
+        // Replaced timeout alert with ad interstitial for Batch Export
         async function exportBatchSF9() {
             if (parsedLearners.length === 0) {
                 alert('No learner records available to export.');
                 return;
             }
 
-            showAdPage(async () => {
+            initiateDownloadWithAd(async () => {
                 const exportBtn = document.getElementById('exportBtn');
                 const originalText = exportBtn.innerHTML;
                 exportBtn.disabled = true;
