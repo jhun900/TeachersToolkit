@@ -1,0 +1,1231 @@
+<html style="margin:0;padding:0;">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+(function(){
+  var s = document.createElement('style');
+  s.textContent = `:root{--bg:#f7f9fc;--card:#ffffff;--text:#0f172a;--muted:#64748b;--accent:#1e6f5c;--accent-soft:rgba(30,111,92,.12);--accent2:#c2410c;--accent2-soft:rgba(194,65,12,.12);--border:rgba(15,23,42,.08)}
+.reveal{opacity:0;transform:translateY(16px);animation:fadeUp .55s ease forwards}.reveal:nth-child(2){animation-delay:.08s}.reveal:nth-child(3){animation-delay:.16s}.reveal:nth-child(4){animation-delay:.24s}@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}.card{transition:transform .2s ease,box-shadow .2s ease}.card:hover{box-shadow:0 10px 30px rgba(0,0,0,.06)}.row-hover:hover{background:rgba(30,111,92,.04)}.inp{border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:14px;outline:none;transition:border-color .15s,box-shadow .15s;width:100%;background:#fff}.inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}.tab-btn{padding:10px 18px;border-radius:10px;font-weight:600;font-size:14px;color:var(--muted);background:transparent;border:none;cursor:pointer;transition:all .15s}.tab-btn.active{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(30,111,92,.25)}.btn{padding:10px 18px;border-radius:10px;font-weight:600;font-size:14px;border:none;cursor:pointer;transition:all .15s}.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn-ghost{background:var(--card);color:var(--text);border:1px solid var(--border)}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}.btn-danger{background:#fee2e2;color:#b91c1c}.btn-danger:hover{background:#fecaca}.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600}.pass{background:#dcfce7;color:#166534}.fail{background:#fee2e2;color:#b91c1c}input[type=number]::-webkit-inner-spin-button{opacity:1}
+.dropzone{border:2px dashed var(--border);border-radius:12px;padding:18px;text-align:center;transition:all .2s;background:#f8fafc}
+.dropzone.dragover{border-color:var(--accent);background:var(--accent-soft)}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal.show{display:flex}
+.badge-male{background:#dbeafe;color:#1e40af}.badge-female{background:#fce7f3;color:#9d174d}.badge-unknown{background:#f1f5f9;color:#475569}
+`;
+  document.head.appendChild(s);
+})();
+</script>
+<div style="background-color:transparent;box-sizing:border-box;">
+  <div style="color:var(--text);font-family:'Public Sans',sans-serif;background:var(--bg)">
+    <div class="max-w-[1400px] mx-auto px-5 py-8">
+
+      <!-- Adsterra Banner Top -->
+      <div class="reveal card rounded-2xl p-3 mb-6 text-center" style="background:var(--card);border:1px solid var(--border);overflow:hidden">
+        <div class="text-[10px] mb-1 tracking-widest" style="color:var(--muted)">ADVERTISEMENT</div>
+        <script async="async" data-cfasync="false" src="https://pl30524144.effectivecpmnetwork.com/b7c6fd92cffbaecadb20942736510a90/invoke.js"></script>
+        <div id="container-b7c6fd92cffbaecadb20942736510a90"></div>
+      </div>
+
+
+      <!-- HERO -->
+      <div class="reveal mb-8">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap">
+          <div style="width:46px;height:46px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <div class="flex-1">
+            <p style="font-family:monospace;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted)">DepEd Order No. 015, s. 2026 · Key Stage 1 · Enhanced with Smart Import</p>
+            <h1 class="text-3xl font-bold" style="letter-spacing:-0.02em;line-height:1.15">KS1 E-Class Record Portal <span style="background:linear-gradient(100deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent">(Grades 2–3)</span></h1>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="autoSaveIndicator" class="text-xs px-2 py-1 rounded bg-emerald-50 text-emerald-700">Auto-saved</span>
+          </div>
+        </div>
+        <p style="color:var(--muted);max-width:820px" class="text-sm mt-2">Three-term grading: Written/Oral Works (20%), Product/Performance Tasks (50%), Examinations (30%). <strong>NEW:</strong> Import from Word / Excel / Image (OCR) → auto converts to Surname-first, Male/Female alphabetical sorting. Save unfinished work inside app (not downloaded).</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- LEFT SIDEBAR -->
+        <div class="lg:col-span-3 space-y-5">
+
+          <!-- SCHOOL PROFILE -->
+          <div class="reveal card rounded-2xl p-5" style="background:var(--card);border:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.05)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+              <div style="width:28px;height:28px;border-radius:8px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/></svg>
+              </div>
+              <h2 class="font-bold text-base">School Profile</h2>
+            </div>
+            <div class="space-y-3 text-sm">
+              <div><label class="block mb-1" style="color:var(--muted);font-size:12px">Region</label><input id="region" class="inp" placeholder="Region XI"></div>
+              <div><label class="block mb-1" style="color:var(--muted);font-size:12px">Division</label><input id="division" class="inp" placeholder="Davao City"></div>
+              <div><label class="block mb-1" style="color:var(--muted);font-size:12px">School Name</label><input id="school" class="inp" placeholder="School Name"></div>
+              <div><label class="block mb-1" style="color:var(--muted);font-size:12px">School ID</label><input id="schoolid" class="inp" placeholder="School ID"></div>
+              <div><label class="block mb-1" style="color:var(--muted);font-size:12px">Grade & Section</label><input id="gradesec" class="inp" placeholder="Grade 2 - Makadiyos"></div>
+              <div><label class="block mb-1" style="color:var(--muted);font-size:12px">Learning Area / Subject</label><input id="subject" class="inp" placeholder="e.g. Mathematics"></div>
+              <div><label class="block mb-1" style="color:var(--muted);font-size:12px">Teacher</label><input id="teacher" class="inp" placeholder="Teacher Name"></div>
+              <div><label class="block mb-1" style="color:var(--muted);font-size:12px">School Year</label><input id="sy" class="inp" value="2026-2027"></div>
+            </div>
+          </div>
+
+          <!-- SMART IMPORT -->
+          <div class="reveal card rounded-2xl p-5 border-2" style="background:linear-gradient(180deg,#ffffff 0%,#f0fdf4 100%);border-color:rgba(30,111,92,.15);box-shadow:0 1px 3px rgba(0,0,0,.05)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <div style="width:28px;height:28px;border-radius:8px;background:#dcfce7;display:flex;align-items:center;justify-content:center;color:#166534">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 18 15 15"/></svg>
+              </div>
+              <h2 class="font-bold text-base">Smart Roster Import</h2>
+              <span class="pill" style="background:#dcfce7;color:#166534;font-size:10px">NEW</span>
+            </div>
+            <p class="text-xs mb-3" style="color:var(--muted)">Supports Word (.docx), Excel (.xlsx/.xls), Images (.jpg/.png) with OCR. Auto-detects Male/Female and converts to <strong>Surname, First Name</strong>.</p>
+            
+            <div id="dropzone" class="dropzone cursor-pointer mb-3">
+              <input type="file" id="smartFile" class="hidden" accept=".xlsx,.xls,.docx,.doc,.png,.jpg,.jpeg,.webp,.bmp">
+              <div class="flex flex-col items-center gap-2">
+                <div style="width:40px;height:40px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(0,0,0,.05)">📄</div>
+                <p class="text-sm font-semibold">Drop file or click to browse</p>
+                <p class="text-[11px]" style="color:var(--muted)">Word, Excel, or Image</p>
+              </div>
+            </div>
+
+            <div id="importStatus" class="hidden text-xs p-2.5 rounded-lg mb-3" style="background:#f1f5f9"></div>
+            
+            <div class="grid grid-cols-2 gap-2 mb-2">
+              <button class="btn btn-ghost text-xs" onclick="document.getElementById('smartFile').click()">Choose File</button>
+              <button class="btn btn-ghost text-xs" onclick="clearImport()">Clear</button>
+            </div>
+
+            <div class="text-[11px] p-2 rounded-lg" style="background:#eff6ff;color:#1e40af">
+              <strong>How it works:</strong> Regardless of format — "Juan Dela Cruz", "Dela Cruz, Juan", "1. Juan Dela Cruz - Male" — system extracts, normalizes to <em>Surname, First Name</em>, groups by gender, sorts A→Z.
+            </div>
+          </div>
+
+          <!-- STUDENT ROSTER -->
+          <div class="reveal card rounded-2xl p-5" style="background:var(--card);border:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.05)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+              <div style="width:28px;height:28px;border-radius:8px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;color:var(--accent);flex-shrink:0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              </div>
+              <h2 class="font-bold text-base">Student Roster <span id="studCount" class="pill" style="background:var(--accent-soft);color:var(--accent)">0</span></h2>
+            </div>
+            <div class="flex gap-2 mb-3">
+              <input id="newStudent" class="inp" placeholder="Surname, First Name M.I." style="flex:1" onkeydown="if(event.key==='Enter')addStudent()">
+              <select id="newGender" class="inp" style="width:90px">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+              <button class="btn btn-primary" onclick="addStudent()">+</button>
+            </div>
+            <div class="flex gap-2 mb-3">
+              <button class="btn btn-ghost text-xs flex-1" onclick="sortStudents()">Sort M→F A↕Z</button>
+              <button class="btn btn-ghost text-xs flex-1" onclick="clearAllStudents()">Clear All</button>
+            </div>
+            <div id="studentList" class="space-y-1.5 max-h-80 overflow-y-auto pr-1 text-sm"></div>
+          </div>
+
+          <!-- PROJECT VAULT -->
+          <div class="reveal card rounded-2xl p-5" style="background:var(--card);border:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.05)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <div style="width:28px;height:28px;border-radius:8px;background:#fef3c7;display:flex;align-items:center;justify-content:center;color:#92400e">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              </div>
+              <h2 class="font-bold text-base">Project Vault</h2>
+              <span class="pill" style="background:#fef3c7;color:#92400e;font-size:10px">IN-APP</span>
+            </div>
+            <p class="text-xs mb-3" style="color:var(--muted)">Save unfinished work <strong>inside this app only</strong> — not downloaded. Pull it anytime to continue editing and export final output.</p>
+            
+            <div class="space-y-2 mb-3">
+              <input id="projectName" class="inp text-sm" placeholder="Project name (e.g., Grade 2 - Math Q1)">
+              <button class="btn btn-primary w-full text-sm" onclick="saveProject()" style="display:flex;align-items:center;justify-content:center;gap:6px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Save Progress In-App
+              </button>
+            </div>
+            <div id="projectList" class="space-y-2 max-h-60 overflow-y-auto"></div>
+          </div>
+
+        </div>
+
+        <!-- MAIN -->
+        <div class="lg:col-span-9 space-y-5">
+
+          <!-- TERM TABS + ACTIONS -->
+          <div class="reveal card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3" style="background:var(--card);border:1px solid var(--border)">
+            <div class="flex gap-2 bg-slate-100 p-1 rounded-xl">
+              <button class="tab-btn active" data-term="1" onclick="switchTerm(1)">Term 1</button>
+              <button class="tab-btn" data-term="2" onclick="switchTerm(2)">Term 2</button>
+              <button class="tab-btn" data-term="3" onclick="switchTerm(3)">Term 3</button>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-ghost text-sm" onclick="saveProject(true)" style="display:flex;align-items:center;gap:6px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>
+                Save Draft
+              </button>
+              <button class="btn btn-primary text-sm" onclick="exportExcel()" data-smartlink="https://www.effectivecpmnetwork.com/dy6fc6chs?key=a57b08df820761100a553e372b756843" style="display:flex;align-items:center;gap:8px;padding:12px 22px">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export to Excel (A4 Landscape)
+              </button>
+            </div>
+          </div>
+
+          <!-- HPS -->
+          <div class="reveal card rounded-2xl p-5" style="background:var(--card);border:1px solid var(--border)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <div style="width:28px;height:28px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;color:#1e40af">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              </div>
+              <h2 class="font-bold text-base">Highest Possible Score (HPS) — <span id="hpsTermLabel">Term 1</span></h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div style="background:#eff6ff;border-radius:10px;padding:12px">
+                <div class="text-xs font-semibold mb-2 text-center" style="color:#1e40af">WRITTEN / ORAL · 20%</div>
+                <div class="grid grid-cols-5 gap-1.5">
+                  <div><label class="text-xs block text-center" style="color:var(--muted)">W1</label><input type="number" min="1" class="inp hps text-center p-1" data-term="1" data-col="ww1" value="25" oninput="updateHPS()"></div>
+                  <div><label class="text-xs block text-center" style="color:var(--muted)">W2</label><input type="number" min="1" class="inp hps text-center p-1" data-term="1" data-col="ww2" value="25" oninput="updateHPS()"></div>
+                  <div><label class="text-xs block text-center" style="color:var(--muted)">W3</label><input type="number" min="1" class="inp hps text-center p-1" data-term="1" data-col="ww3" value="25" oninput="updateHPS()"></div>
+                  <div><label class="text-xs block text-center" style="color:var(--muted)">W4</label><input type="number" min="1" class="inp hps text-center p-1" data-term="1" data-col="ww4" value="25" oninput="updateHPS()"></div>
+                  <div><label class="text-xs block text-center" style="color:var(--muted)">W5</label><input type="number" min="1" class="inp hps text-center p-1" data-term="1" data-col="ww5" value="25" oninput="updateHPS()"></div>
+                </div>
+              </div>
+              <div style="background:#ecfdf5;border-radius:10px;padding:12px">
+                <div class="text-xs font-semibold mb-2 text-center" style="color:#065f46">PERFORMANCE · 50%</div>
+                <div class="grid grid-cols-3 gap-2">
+                  <div><label class="text-xs block text-center" style="color:var(--muted)">PT1</label><input type="number" min="1" class="inp hps text-center p-1" data-term="1" data-col="pt1" value="30" oninput="updateHPS()"></div>
+                  <div><label class="text-xs block text-center" style="color:var(--muted)">PT2</label><input type="number" min="1" class="inp hps text-center p-1" data-term="1" data-col="pt2" value="30" oninput="updateHPS()"></div>
+                  <div><label class="text-xs block text-center" style="color:var(--muted)">PT3</label><input type="number" min="1" class="inp hps text-center p-1" data-term="1" data-col="pt3" value="30" oninput="updateHPS()"></div>
+                </div>
+              </div>
+              <div style="background:#fff7ed;border-radius:10px;padding:12px">
+                <div class="text-xs font-semibold mb-2 text-center" style="color:#9a3412">SUMMATIVE / EXAM · 30%</div>
+                <div class="grid grid-cols-3 gap-2">
+                  <div><label class="text-xs block text-center" style="color:var(--muted)">ST1</label><input type="number" min="1" class="inp hps text-center p-1" data-term="1" data-col="st1" value="50" oninput="updateHPS()"></div>
+                  <div><label class="text-xs block text-center" style="color:var(--muted)">ST2</label><input type="number" min="1" class="inp hps text-center p-1" data-term="1" data-col="st2" value="50" oninput="updateHPS()"></div>
+                  <div><label class="text-xs block text-center" style="color:var(--muted)">TE</label><input type="number" min="1" class="inp hps text-center p-1" data-term="1" data-col="te" value="50" oninput="updateHPS()"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SCORES GRID -->
+          <div class="reveal card rounded-2xl p-5" style="background:var(--card);border:1px solid var(--border)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:28px;height:28px;border-radius:8px;background:var(--accent2-soft);display:flex;align-items:center;justify-content:center;color:var(--accent2)">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <h2 class="font-bold text-base">Live Score Matrix — <span id="gridTermLabel">Term 1</span></h2>
+              </div>
+              <span class="text-xs pill" style="background:#f1f5f9;color:#475569">Sorted: Male A-Z → Female A-Z</span>
+            </div>
+            <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+              <table class="w-full text-xs" id="scoresTable" style="min-width:1250px;border-collapse:collapse">
+                <thead id="gridHead"></thead>
+                <tbody id="gridBody"></tbody>
+              </table>
+            </div>
+            <p id="emptyHint" class="text-center py-10 text-sm" style="color:var(--muted)">Add students manually or use Smart Import to begin.</p>
+          </div>
+
+          <!-- SUMMARY -->
+          <div class="reveal card rounded-2xl p-5" style="background:var(--card);border:1px solid var(--border)">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <div style="width:28px;height:28px;border-radius:8px;background:#ede9fe;display:flex;align-items:center;justify-content:center;color:#5b21b6">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              </div>
+              <h2 class="font-bold text-base">Summary of Grades Consolidation Preview</h2>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="w-full text-sm" style="min-width:700px;border-collapse:collapse">
+                <thead><tr style="background:#ede9fe;color:#5b21b6">
+                  <th class="text-left py-2.5 px-3 rounded-tl-lg">#</th>
+                  <th class="text-left py-2.5 px-3">Learner Name</th>
+                  <th class="text-center py-2.5 px-2">Gender</th>
+                  <th class="text-center py-2.5 px-3">Term 1</th>
+                  <th class="text-center py-2.5 px-3">Term 2</th>
+                  <th class="text-center py-2.5 px-3">Term 3</th>
+                  <th class="text-center py-2.5 px-3 font-bold">Final</th>
+                  <th class="text-center py-2.5 px-3 rounded-tr-lg">Descriptor</th>
+                </tr></thead>
+                <tbody id="eosyBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Ad Countdown Modal - In-Page, No New Tab -->
+<div id="adCountdownModal" class="modal" style="display:none;z-index:100">
+  <div class="card rounded-2xl p-0 w-full max-w-lg overflow-hidden" style="background:#fff;box-shadow:0 25px 80px rgba(0,0,0,.25)">
+    <div class="p-4 border-b" style="background:#f8fafc;border-color:var(--border);display:flex;justify-content:space-between;align-items:center">
+      <div class="flex items-center gap-2">
+        <div style="width:28px;height:28px;border-radius:8px;background:#fef3c7;display:flex;align-items:center;justify-content:center">📢</div>
+        <div>
+          <h3 class="font-bold text-sm">Please support us</h3>
+          <p class="text-[11px]" style="color:var(--muted)">Advertisement - Download will be ready after countdown</p>
+        </div>
+      </div>
+      <span class="pill text-[10px]" style="background:#fef3c7;color:#92400e">AD</span>
+    </div>
+    
+    <!-- Smartlink Ad Area - Same Page (iframe, no new tab) -->
+    <div id="adFrameWrap" style="background:#fff;min-height:180px;display:flex;align-items:center;justify-content:center;position:relative">
+      <iframe id="smartlinkFrame" src="" style="width:100%;height:260px;border:0;display:none" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"></iframe>
+      <div id="adPlaceholder" class="text-center p-6">
+        <div class="text-xs" style="color:var(--muted)">Loading advertisement...</div>
+        <div class="mt-3 text-[11px] px-3 py-2 rounded" style="background:#eff6ff;color:#1e40af">Ads help keep this tool free for teachers</div>
+        <div class="mt-4">
+          <script async="async" data-cfasync="false" src="https://pl30524144.effectivecpmnetwork.com/b7c6fd92cffbaecadb20942736510a90/invoke.js"></script>
+          <div id="container-b7c6fd92cffbaecadb20942736510a90-modal"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-5 text-center" style="background:#f8fafc">
+      <div id="countdownSection">
+        <p class="text-sm mb-2" style="color:var(--text)">Your Excel file is being prepared. Please wait <strong id="countdownNum" style="font-size:20px;color:var(--accent)">10</strong> seconds to continue.</p>
+        <div class="w-full h-2 rounded-full overflow-hidden" style="background:#e2e8f0">
+          <div id="countdownProgress" style="height:100%;width:100%;background:var(--accent);transition:width 1s linear"></div>
+        </div>
+        <p class="text-[11px] mt-2" style="color:var(--muted)">Do not close this window. Ad stays on same page.</p>
+      </div>
+      
+      <div id="readySection" style="display:none">
+        <p class="text-sm font-semibold mb-3 text-emerald-700">✓ Ready to download!</p>
+        <a id="smartlinkAnchor" href="https://www.effectivecpmnetwork.com/dy6fc6chs?key=a57b08df820761100a553e372b756843" style="display:none"></a>
+        <button id="finalDownloadBtn" class="btn btn-primary w-full text-sm" style="padding:14px 22px;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;margin:0 auto">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Click to Download Excel
+        </button>
+        <p class="text-[10px] mt-2" style="color:var(--muted)">File will download immediately after clicking</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT REVIEW MODAL -->
+<div id="importModal" class="modal">
+  <div class="card rounded-2xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto" style="background:#fff">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h3 class="font-bold text-lg">Review Imported Names</h3>
+        <p class="text-xs" style="color:var(--muted)">All names converted to <strong>Surname, First Name</strong> format. Sorted Male → Female A-Z. Adjust gender if needed before adding.</p>
+      </div>
+      <button class="btn btn-ghost text-xs" onclick="closeImportModal()">✕</button>
+    </div>
+    <div id="importPreviewStats" class="grid grid-cols-3 gap-2 mb-4 text-center"></div>
+    <div class="mb-3 flex gap-2">
+      <input id="importSearch" class="inp text-sm flex-1" placeholder="Search names..." oninput="filterImportPreview()">
+      <select id="importGenderFilter" class="inp text-sm" style="width:130px" onchange="filterImportPreview()">
+        <option value="all">All Gender</option>
+        <option value="male">Male only</option>
+        <option value="female">Female only</option>
+      </select>
+    </div>
+    <div style="max-height:360px;overflow-y:auto;border:1px solid var(--border);border-radius:10px">
+      <table class="w-full text-sm">
+        <thead style="position:sticky;top:0;background:#f8fafc"><tr><th class="text-left p-2"><input type="checkbox" id="importCheckAll" checked onchange="toggleAllImport(this.checked)"></th><th class="text-left p-2">#</th><th class="text-left p-2">Normalized Name (Surname First)</th><th class="text-left p-2">Gender</th><th class="text-left p-2">Original</th></tr></thead>
+        <tbody id="importPreviewBody"></tbody>
+      </table>
+    </div>
+    <div class="flex gap-2 mt-4 justify-end">
+      <button class="btn btn-ghost" onclick="closeImportModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmImport()">Add <span id="importCountBtn">0</span> Learners to Roster</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var currentTerm = 1;
+var state = {
+  profile: { region:'', division:'', school:'', schoolid:'', gradesec:'', subject:'', teacher:'', sy:'2026-2027' },
+  students: [],
+  hps: {
+    1: { ww1:25, ww2:25, ww3:25, ww4:25, ww5:25, pt1:30, pt2:30, pt3:30, st1:50, st2:50, te:50 },
+    2: { ww1:25, ww2:25, ww3:25, ww4:25, ww5:25, pt1:30, pt2:30, pt3:30, st1:50, st2:50, te:50 },
+    3: { ww1:25, ww2:25, ww3:25, ww4:25, ww5:25, pt1:30, pt2:30, pt3:30, st1:50, st2:50, te:50 }
+  },
+  scores: {}
+};
+var importCache = [];
+
+/* ---------- STORAGE ---------- */
+function save() {
+  localStorage.setItem('ks1_state', JSON.stringify(state));
+  var ind = document.getElementById('autoSaveIndicator');
+  if(ind){ ind.textContent='Saved '+ new Date().toLocaleTimeString(); ind.className='text-xs px-2 py-1 rounded bg-emerald-50 text-emerald-700'; setTimeout(()=>{ ind.textContent='Auto-saved'; },2000); }
+}
+function load() {
+  var s = localStorage.getItem('ks1_state');
+  if (s) {
+    try{
+      var loaded = JSON.parse(s);
+      if(loaded.hps) state.hps = loaded.hps;
+      if(loaded.profile) state.profile = Object.assign(state.profile, loaded.profile);
+      if(loaded.students){
+        state.students = loaded.students.map(st=>{
+          if(typeof st === 'string') return {id: Date.now().toString()+Math.random().toString(36).slice(2), name: st, gender: 'male'};
+          return {id: st.id || Date.now().toString()+Math.random().toString(36).slice(2), name: st.name || st, gender: st.gender || 'male'};
+        });
+        // migrate to gender aware and ensure sorting later
+      }
+      if(loaded.scores) state.scores = loaded.scores;
+    }catch(e){ console.error(e); }
+  }
+}
+
+/* ---------- HELPERS ---------- */
+function escapeHtml(str) { return String(str).replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag])); }
+function toTitleCase(str){
+  return str.toLowerCase().split(' ').map(w=>{
+    if(!w) return w;
+    if(['de','del','dela','de','la','los','san','santa','santo','da','van','von','delos'].includes(w.toLowerCase())) return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase();
+    return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase();
+  }).join(' ').replace(/\s+/g,' ').trim();
+}
+function transmute(ig){
+  if(ig==null||isNaN(ig)) return null;
+  var tg;
+  if(ig >= 100) tg = 100;
+  else if(ig >= 70) tg = 75 + (ig - 70) * 25 / 30;
+  else if(ig >= 0)  tg = 60 + ig * 15 / 70;
+  else tg = 60;
+  return Math.round(tg * 100) / 100;
+}
+function descriptor(tg){
+  if(tg==null) return '';
+  if(tg>=90) return 'Advancing';
+  if(tg>=80) return 'Benchmarking';
+  if(tg>=75) return 'Connecting';
+  if(tg>=65) return 'Developing';
+  return 'Emerging';
+}
+function computeStudent(studId, term){
+  var sc = (state.scores[studId] && state.scores[studId][term]) || {};
+  var h = state.hps[term];
+  var wwRaw=0, wwHps=0, wwPct=null;
+  ['ww1','ww2','ww3','ww4','ww5'].forEach(function(k){ if(h[k]>0){ wwHps+=h[k]; if(sc[k]!=null&&sc[k]!=='') wwRaw+=Number(sc[k]); }});
+  if(wwHps>0) wwPct=(wwRaw/wwHps)*100;
+  var ptRaw=0, ptHps=0, ptPct=null;
+  ['pt1','pt2','pt3'].forEach(function(k){ if(h[k]>0){ ptHps+=h[k]; if(sc[k]!=null&&sc[k]!=='') ptRaw+=Number(sc[k]); }});
+  if(ptHps>0) ptPct=(ptRaw/ptHps)*100;
+  var exRaw=0, exHps=0, exPct=null;
+  ['st1','st2','te'].forEach(function(k){ if(h[k]>0){ exHps+=h[k]; if(sc[k]!=null&&sc[k]!=='') exRaw+=Number(sc[k]); }});
+  if(exHps>0) exPct=(exRaw/exHps)*100;
+  var ig = null; var count = 0; var sum = 0;
+  if(wwPct!=null){ sum += wwPct * 0.20; count += 0.20; }
+  if(ptPct!=null){ sum += ptPct * 0.50; count += 0.50; }
+  if(exPct!=null){ sum += exPct * 0.30; count += 0.30; }
+  if(count>0) ig = sum / count;
+  return { wwPct: wwPct, ptPct: ptPct, exPct: exPct, ig: ig, tg: ig!=null?transmute(ig):null, desc: ig!=null?descriptor(transmute(ig)):'' };
+}
+
+/* ---------- NAME NORMALIZATION ENGINE ---------- */
+function normalizeToSurnameFirst(raw){
+  if(!raw) return '';
+  raw = raw.replace(/\s+/g,' ').trim();
+  // remove leading numbers / bullets
+  raw = raw.replace(/^[\d]+[\.\)\s\-]+/, '').trim();
+  raw = raw.replace(/^[•\-\*]\s*/, '').trim();
+  if(!raw) return '';
+  // If contains comma, assume surname first
+  if(raw.includes(',')){
+    var parts = raw.split(',');
+    var surname = parts[0].trim();
+    var given = parts.slice(1).join(' ').trim().replace(/\s+/g,' ');
+    // clean given from extra commas
+    given = given.replace(/,+/g,' ').trim();
+    var finalName = toTitleCase(surname) + (given? ', ' + toTitleCase(given) : '');
+    return finalName.replace(/\s+/g,' ').trim();
+  }
+  // No comma: assume "First Middle Surname"
+  var words = raw.split(' ').filter(w=>w);
+  if(words.length===1) return toTitleCase(words[0]);
+  var lowerPrefixes = ['de','del','dela','dela cruz','de la','de los','delos','san','santa','santo','da','van','von'];
+  // check last 2 words
+  var lastTwo = words.slice(-2).join(' ').toLowerCase();
+  var lastOneLower = words[words.length-1].toLowerCase();
+  var secondLastLower = words[words.length-2].toLowerCase();
+  var surname, givenWords;
+  if(lowerPrefixes.includes(secondLastLower) || lowerPrefixes.includes(lastTwo) || (secondLastLower==='dela' && lastOneLower==='cruz')){
+    surname = words.slice(-2).join(' ');
+    givenWords = words.slice(0,-2);
+  } else {
+    // also handle "De Guzman", "Dela Cruz" as 2 words surname even if prefix list not exact
+    if(['dela','de','del','san'].includes(secondLastLower)){
+      surname = words.slice(-2).join(' ');
+      givenWords = words.slice(0,-2);
+    } else {
+      surname = words[words.length-1];
+      givenWords = words.slice(0,-1);
+    }
+  }
+  if(givenWords.length===0) return toTitleCase(surname);
+  return toTitleCase(surname) + ', ' + toTitleCase(givenWords.join(' '));
+}
+
+function detectGenderFromLine(line){
+  var lower = line.toLowerCase().trim();
+  // section markers
+  if(['male','males','boys','boy','lalaki','all male'].includes(lower)) return {section:'male', gender:null, clean:''};
+  if(['female','females','girls','girl','babae','all female'].includes(lower)) return {section:'female', gender:null, clean:''};
+  // trailing gender patterns: " - M", " / F", ", Male", " (Female)", " MALE"
+  var gender = null;
+  var clean = line;
+  var m = line.match(/[\s,\-\|\/\(]+\s*(male|female|m|f|boy|girl|babae|lalaki)\s*\)?\s*$/i);
+  if(m){
+    var g = m[1].toLowerCase();
+    if(['male','m','boy','lalaki'].includes(g)) gender='male';
+    else if(['female','f','girl','babae'].includes(g)) gender='female';
+    clean = line.substring(0, m.index).trim().replace(/[\s,\-\|\/\(]+$/,'').trim();
+  }
+  return {section:null, gender: gender, clean: clean};
+}
+
+function parseRawLines(rawLines){
+  var results = [];
+  var currentSectionGender = null;
+  rawLines.forEach(function(originalLine){
+    if(!originalLine) return;
+    var linesSplit = originalLine.split(/[\r\n]+/);
+    linesSplit.forEach(function(line){
+      line = line.trim();
+      if(!line) return;
+      if(line.length < 2) return;
+      // ignore obvious headers
+      if(/^(list of|names|learner|student|no\.?|#|s\.?no)$/i.test(line)) return;
+      if(/^(surname|firstname|first name|last name)/i.test(line)) return;
+      if(/^\d+\s*$/.test(line)) return;
+
+      var detection = detectGenderFromLine(line);
+      if(detection.section){
+        currentSectionGender = detection.section;
+        return;
+      }
+      var gender = detection.gender || currentSectionGender || null;
+      var cleanName = detection.clean || line;
+      // Remove leading numbering again after gender strip
+      cleanName = cleanName.replace(/^[\d]+[\.\)\s\-]+/, '').trim();
+      if(cleanName.length < 2) return;
+      // Filter out lines that are just "MALE" etc leftover
+      if(/^(male|female|boys|girls)$/i.test(cleanName)) return;
+
+      var normalized = normalizeToSurnameFirst(cleanName);
+      if(!normalized || normalized.length < 3) return;
+      // Avoid duplicates in same import (case insensitive)
+      results.push({original: line, normalized: normalized, gender: gender || 'male', _lower: normalized.toLowerCase()});
+    });
+  });
+  // Deduplicate by normalized
+  var seen = {};
+  var deduped = [];
+  results.forEach(function(r){
+    if(!seen[r._lower]){
+      seen[r._lower]=true;
+      deduped.push(r);
+    }
+  });
+  return deduped;
+}
+
+function sortImportedCache(){
+  importCache.sort(function(a,b){
+    if(a.gender !== b.gender){
+      if(a.gender==='male' && b.gender==='female') return -1;
+      if(a.gender==='female' && b.gender==='male') return 1;
+    }
+    return a.normalized.localeCompare(b.normalized,'en');
+  });
+}
+
+/* ---------- SMART IMPORT HANDLERS ---------- */
+function showStatus(msg, type){
+  var el = document.getElementById('importStatus');
+  el.classList.remove('hidden');
+  el.textContent = msg;
+  if(type==='error'){ el.style.background='#fee2e2'; el.style.color='#b91c1c'; }
+  else if(type==='success'){ el.style.background='#dcfce7'; el.style.color='#166534'; }
+  else { el.style.background='#f1f5f9'; el.style.color='#334155'; }
+}
+
+async function parseExcelFile(file){
+  return new Promise(function(resolve, reject){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try{
+        var data = new Uint8Array(e.target.result);
+        var wb = XLSX.read(data, {type:'array'});
+        var firstSheet = wb.Sheets[wb.SheetNames[0]];
+        var json = XLSX.utils.sheet_to_json(firstSheet, {header:1, defval:''});
+        var lines=[];
+        json.forEach(function(row){
+          row.forEach(function(cell){
+            if(cell && typeof cell==='string' && cell.trim().length>1){
+              // split by comma if multiple names in one cell? but keep as separate detection will handle
+              lines.push(String(cell).trim());
+            } else if(cell && typeof cell==='number'){
+              // ignore numbers
+            }
+          });
+        });
+        resolve(lines);
+      }catch(err){ reject(err); }
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+async function parseWordFile(file){
+  return new Promise(function(resolve, reject){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try{
+        mammoth.extractRawText({arrayBuffer: e.target.result}).then(function(result){
+          var text = result.value;
+          var lines = text.split(/[\r\n]+/).map(s=>s.trim()).filter(Boolean);
+          resolve(lines);
+        }).catch(reject);
+      }catch(err){ reject(err); }
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+async function parseImageFile(file){
+  showStatus('Running OCR on image... this may take 10-20 seconds', 'info');
+  return new Promise(function(resolve, reject){
+    var reader = new FileReader();
+    reader.onload = async function(e){
+      try{
+        const worker = await Tesseract.createWorker('eng');
+        const {data} = await worker.recognize(e.target.result);
+        await worker.terminate();
+        var lines = data.text.split(/[\r\n]+/).map(s=>s.trim()).filter(Boolean);
+        resolve(lines);
+      }catch(err){ reject(err); }
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleSmartFile(file){
+  if(!file) return;
+  var ext = file.name.split('.').pop().toLowerCase();
+  showStatus('Reading '+file.name+'...', 'info');
+  try{
+    var rawLines=[];
+    if(['xlsx','xls'].includes(ext)){
+      rawLines = await parseExcelFile(file);
+    } else if(['docx','doc'].includes(ext)){
+      rawLines = await parseWordFile(file);
+    } else if(['png','jpg','jpeg','webp','bmp'].includes(ext)){
+      rawLines = await parseImageFile(file);
+    } else {
+      showStatus('Unsupported file type. Use .xlsx, .docx, or image.', 'error');
+      return;
+    }
+    if(!rawLines.length){ showStatus('No text found in file.', 'error'); return; }
+    var parsed = parseRawLines(rawLines);
+    if(!parsed.length){ showStatus('No valid names detected. Check file content.', 'error'); return; }
+    importCache = parsed;
+    sortImportedCache();
+    showImportPreview();
+    showStatus('Detected '+parsed.length+' names. Review below.', 'success');
+  }catch(err){
+    console.error(err);
+    showStatus('Failed to parse file: '+err.message, 'error');
+  }
+}
+
+function showImportPreview(){
+  sortImportedCache();
+  var body = document.getElementById('importPreviewBody');
+  var maleCount = importCache.filter(x=>x.gender==='male').length;
+  var femaleCount = importCache.filter(x=>x.gender==='female').length;
+  document.getElementById('importPreviewStats').innerHTML = 
+    '<div class="p-2 rounded bg-blue-50 text-blue-800 text-xs"><strong>'+importCache.length+'</strong> Total</div>'+
+    '<div class="p-2 rounded bg-sky-50 text-sky-800 text-xs"><strong>'+maleCount+'</strong> Male</div>'+
+    '<div class="p-2 rounded bg-pink-50 text-pink-800 text-xs"><strong>'+femaleCount+'</strong> Female</div>';
+  document.getElementById('importCountBtn').textContent = importCache.length;
+  renderImportRows(importCache);
+  document.getElementById('importModal').classList.add('show');
+}
+
+function renderImportRows(list){
+  var body = document.getElementById('importPreviewBody');
+  body.innerHTML = list.map(function(item, idx){
+    var realIdx = importCache.indexOf(item);
+    return '<tr class="border-b" data-idx="'+realIdx+'" data-gender="'+item.gender+'" data-name="'+escapeHtml(item.normalized.toLowerCase())+'">'+
+      '<td class="p-2"><input type="checkbox" class="import-check" data-idx="'+realIdx+'" checked></td>'+
+      '<td class="p-2 text-xs">'+(realIdx+1)+'</td>'+
+      '<td class="p-2 font-medium">'+escapeHtml(item.normalized)+'</td>'+
+      '<td class="p-2"><select class="inp text-xs p-1" style="width:90px" onchange="updateImportGender('+realIdx+',this.value)"><option value="male" '+(item.gender==='male'?'selected':'')+'>Male</option><option value="female" '+(item.gender==='female'?'selected':'')+'>Female</option></select></td>'+
+      '<td class="p-2 text-xs" style="color:var(--muted)">'+escapeHtml(item.original)+'</td>'+
+    '</tr>';
+  }).join('');
+}
+
+function filterImportPreview(){
+  var search = document.getElementById('importSearch').value.toLowerCase();
+  var genderFilter = document.getElementById('importGenderFilter').value;
+  var rows = document.querySelectorAll('#importPreviewBody tr');
+  rows.forEach(function(row){
+    var name = row.getAttribute('data-name');
+    var gender = row.getAttribute('data-gender');
+    var matchSearch = !search || name.includes(search);
+    var matchGender = genderFilter==='all' || gender===genderFilter;
+    row.style.display = (matchSearch && matchGender) ? '' : 'none';
+  });
+}
+function updateImportGender(idx, gender){
+  importCache[idx].gender = gender;
+  var row = document.querySelector('#importPreviewBody tr[data-idx="'+idx+'"]');
+  if(row) row.setAttribute('data-gender', gender);
+  filterImportPreview();
+  var maleCount = importCache.filter(x=>x.gender==='male').length;
+  var femaleCount = importCache.filter(x=>x.gender==='female').length;
+  document.getElementById('importPreviewStats').innerHTML = 
+    '<div class="p-2 rounded bg-blue-50 text-blue-800 text-xs"><strong>'+importCache.length+'</strong> Total</div>'+
+    '<div class="p-2 rounded bg-sky-50 text-sky-800 text-xs"><strong>'+maleCount+'</strong> Male</div>'+
+    '<div class="p-2 rounded bg-pink-50 text-pink-800 text-xs"><strong>'+femaleCount+'</strong> Female</div>';
+}
+function toggleAllImport(checked){
+  document.querySelectorAll('.import-check').forEach(function(cb){ cb.checked = checked; });
+  updateImportBtnCount();
+}
+function updateImportBtnCount(){
+  var count = document.querySelectorAll('.import-check:checked').length;
+  document.getElementById('importCountBtn').textContent = count;
+}
+function closeImportModal(){
+  document.getElementById('importModal').classList.remove('show');
+}
+function confirmImport(){
+  var checks = document.querySelectorAll('.import-check:checked');
+  var toAdd = [];
+  checks.forEach(function(cb){
+    var idx = Number(cb.getAttribute('data-idx'));
+    if(importCache[idx]) toAdd.push(importCache[idx]);
+  });
+  if(!toAdd.length){ alert('Select at least one name.'); return; }
+  // Sort final add list Male -> Female A-Z
+  toAdd.sort(function(a,b){
+    if(a.gender!==b.gender) return a.gender==='male' ? -1 : 1;
+    return a.normalized.localeCompare(b.normalized,'en');
+  });
+  var added=0;
+  toAdd.forEach(function(item){
+    var exists = state.students.some(s=>s.name.toLowerCase()===item.normalized.toLowerCase());
+    if(!exists){
+      state.students.push({id: Date.now().toString()+Math.random().toString(36).slice(2)+added, name: item.normalized, gender: item.gender});
+      added++;
+    }
+  });
+  sortStudents(false);
+  save();
+  renderStudentList();
+  renderGrid();
+  closeImportModal();
+  showStatus('Added '+added+' learners (Male first, Surname A-Z).', 'success');
+  document.getElementById('smartFile').value='';
+}
+function clearImport(){
+  importCache=[];
+  document.getElementById('importStatus').classList.add('hidden');
+  document.getElementById('smartFile').value='';
+}
+
+/* ---------- STUDENT ROSTER ---------- */
+function renderStudentList(){
+  var el = document.getElementById('studentList');
+  document.getElementById('studCount').textContent = state.students.length;
+  if(!state.students.length){ el.innerHTML='<p class="text-xs py-4 text-center" style="color:var(--muted)">No learners listed. Use Smart Import or add manually.</p>'; return; }
+  el.innerHTML = state.students.map(function(s,i){
+    var badgeClass = s.gender==='female' ? 'badge-female' : (s.gender==='male' ? 'badge-male' : 'badge-unknown');
+    return '<div class="row-hover flex items-center justify-between px-2.5 py-1.5 rounded-lg gap-2"><div class="flex items-center gap-2 truncate flex-1"><span class="text-xs">'+(i+1)+'.</span><strong class="truncate">'+escapeHtml(s.name)+'</strong></div><div class="flex items-center gap-1"><span class="pill text-[10px] '+badgeClass+'">'+(s.gender==='female'?'F':'M')+'</span><select class="inp text-[10px] p-1" style="width:55px" onchange="changeStudentGender(\''+s.id+'\',this.value)"><option value="male" '+(s.gender==='male'?'selected':'')+'>M</option><option value="female" '+(s.gender==='female'?'selected':'')+'>F</option></select><button class="btn btn-danger text-xs" style="padding:3px 8px" onclick="removeStudent(\''+s.id+'\')">✕</button></div></div>';
+  }).join('');
+}
+function changeStudentGender(id, gender){
+  var st = state.students.find(s=>s.id===id);
+  if(st){ st.gender=gender; save(); renderGrid(); }
+}
+function renderGrid(){
+  document.getElementById('hpsTermLabel').textContent='Term '+currentTerm;
+  document.getElementById('gridTermLabel').textContent='Term '+currentTerm;
+  document.querySelectorAll('.hps').forEach(function(inp){
+    var t=Number(inp.dataset.term),c=inp.dataset.col;
+    if(t===currentTerm){ inp.value=state.hps[t][c]; inp.disabled=false; }
+    else inp.disabled=true;
+  });
+  var h=state.hps[currentTerm];
+  var head='<tr style="background:#f1f5f9"><th class="text-left py-2.5 px-3 sticky left-0 z-10" style="background:#f1f5f9;min-width:220px;border-top-left-radius:10px"># · Learner (M→F A-Z)</th>';
+  ['W1','W2','W3','W4','W5'].forEach(function(k){ var kk=k.replace('W','ww').toLowerCase(); head+='<th class="text-center py-2 px-1" style="min-width:50px"><div>'+k+'</div><div class="font-bold text-blue-700">/'+h[kk]+'</div></th>'; });
+  ['PT1','PT2','PT3'].forEach(function(k){ var kk=k.toLowerCase(); head+='<th class="text-center py-2 px-1" style="min-width:50px"><div>'+k+'</div><div class="font-bold text-emerald-700">/'+h[kk]+'</div></th>'; });
+  ['ST1','ST2','TE'].forEach(function(k){ var kk=k.toLowerCase(); head+='<th class="text-center py-2 px-1" style="min-width:50px"><div>'+k+'</div><div class="font-bold text-orange-700">/'+h[kk]+'</div></th>'; });
+  head+='<th class="text-center py-2 px-1" style="min-width:60px">WW%</th><th class="text-center py-2 px-1" style="min-width:60px">PT%</th><th class="text-center py-2 px-1" style="min-width:60px">EX%</th><th class="text-center py-2 px-1" style="min-width:65px">Initial</th><th class="text-center py-2 px-1" style="min-width:65px;border-top-right-radius:10px">Grade</th></tr>';
+  document.getElementById('gridHead').innerHTML=head;
+  var hint=document.getElementById('emptyHint'), tbody=document.getElementById('gridBody');
+  if(!state.students.length){ tbody.innerHTML=''; hint.style.display='block'; renderEOSY(); return; }
+  hint.style.display='none';
+  tbody.innerHTML = state.students.map(function(s,i){
+    var r = computeStudent(s.id, currentTerm);
+    var sc = (state.scores[s.id] && state.scores[s.id][currentTerm]) || {};
+    var badgeClass = s.gender==='female' ? 'badge-female' : 'badge-male';
+    var row = '<tr class="row-hover" style="border-bottom:1px solid var(--border)"><td class="py-2 px-3 sticky left-0 z-10 font-medium" style="background:#f8fafc;max-width:220px"><div class="flex items-center gap-2"><span class="pill text-[10px] '+badgeClass+'">'+(s.gender==='female'?'F':'M')+'</span><span class="truncate" title="'+escapeHtml(s.name)+'">'+(i+1)+'. '+escapeHtml(s.name)+'</span></div></td>';
+    ['ww1','ww2','ww3','ww4','ww5','pt1','pt2','pt3','st1','st2','te'].forEach(function(k){
+      row += '<td class="py-1 px-1"><input type="number" min="0" class="inp text-center p-1" value="'+(sc[k]||'')+'" onchange="updateScore(\''+s.id+'\',\''+k+'\',this.value)"></td>';
+    });
+    row += '<td class="text-center py-2 px-1 font-semibold text-blue-700">'+(r.wwPct!=null?r.wwPct.toFixed(1):'--')+'</td>';
+    row += '<td class="text-center py-2 px-1 font-semibold text-emerald-700">'+(r.ptPct!=null?r.ptPct.toFixed(1):'--')+'</td>';
+    row += '<td class="text-center py-2 px-1 font-semibold text-orange-700">'+(r.exPct!=null?r.exPct.toFixed(1):'--')+'</td>';
+    row += '<td class="text-center py-2 px-1 text-slate-500">'+(r.ig!=null?r.ig.toFixed(2):'--')+'</td>';
+    var badge = r.tg>=75 ? 'pass' : 'fail';
+    row += '<td class="text-center py-2 px-1 font-bold"><span class="'+(r.tg!=null?badge:'')+'" style="'+(r.tg!=null?'padding:2px 8px;border-radius:6px':'')+'">'+(r.tg||'--')+'</span></td></tr>';
+    return row;
+  }).join('');
+  renderEOSY();
+}
+function renderEOSY(){
+  var tbody = document.getElementById('eosyBody');
+  if(!state.students.length){
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-sm" style="color:var(--muted)">No learners listed.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = state.students.map(function(s, i){
+    var c1 = computeStudent(s.id, 1), c2 = computeStudent(s.id, 2), c3 = computeStudent(s.id, 3);
+    var fg = null;
+    if(c1.tg && c2.tg && c3.tg) fg = Math.round((c1.tg + c2.tg + c3.tg) / 3);
+    var badgeClass = s.gender==='female' ? 'badge-female' : 'badge-male';
+    return '<tr style="border-bottom:1px solid var(--border)">'+
+      '<td class="py-2.5 px-3">'+(i+1)+'</td>'+
+      '<td class="py-2.5 px-3 font-medium">'+escapeHtml(s.name)+'</td>'+
+      '<td class="text-center py-2.5 px-2"><span class="pill text-[10px] '+badgeClass+'">'+(s.gender==='female'?'FEMALE':'MALE')+'</span></td>'+
+      '<td class="text-center py-2.5 px-3">'+(c1.tg||'--')+'</td>'+
+      '<td class="text-center py-2.5 px-3">'+(c2.tg||'--')+'</td>'+
+      '<td class="text-center py-2.5 px-3">'+(c3.tg||'--')+'</td>'+
+      '<td class="text-center py-2.5 px-3 font-bold '+(fg>=75?'text-emerald-700':'text-red-600')+'">'+(fg||'--')+'</td>'+
+      '<td class="text-center py-2.5 px-3">'+(fg?descriptor(fg):'--')+'</td>'+
+    '</tr>';
+  }).join('');
+}
+function updateHPS(){
+  document.querySelectorAll('.hps').forEach(function(inp){
+    if(!inp.disabled) state.hps[currentTerm][inp.dataset.col] = Number(inp.value)||0;
+  });
+  save(); renderGrid();
+}
+function updateScore(studId, col, val){
+  if(!state.scores[studId]) state.scores[studId] = {1:{}, 2:{}, 3:{}};
+  if(!state.scores[studId][currentTerm]) state.scores[studId][currentTerm] = {};
+  state.scores[studId][currentTerm][col] = val;
+  save(); renderGrid();
+}
+function addStudent(){
+  var v = document.getElementById('newStudent').value.trim();
+  var g = document.getElementById('newGender').value;
+  if(!v) return;
+  var normalized = normalizeToSurnameFirst(v);
+  state.students.push({ id: Date.now().toString()+Math.random().toString(36).slice(2), name: normalized, gender: g });
+  document.getElementById('newStudent').value = '';
+  sortStudents(false);
+  save(); renderStudentList(); renderGrid();
+}
+function removeStudent(id){
+  if(!confirm('Remove this learner?')) return;
+  state.students = state.students.filter(function(s){return s.id!==id;});
+  delete state.scores[id];
+  save(); renderStudentList(); renderGrid();
+}
+function sortStudents(doSave=true){
+  state.students.sort(function(a,b){
+    if(a.gender!==b.gender){
+      return a.gender==='male' ? -1 : 1;
+    }
+    return a.name.localeCompare(b.name,'en');
+  });
+  if(doSave) save();
+  renderStudentList(); renderGrid();
+}
+function clearAllStudents(){
+  if(!state.students.length || !confirm('Clear all student entries?')) return;
+  state.students = []; 
+  state.scores = {};
+  save(); renderStudentList(); renderGrid();
+}
+function switchTerm(t){
+  currentTerm = t;
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    if(Number(btn.dataset.term)===t) btn.classList.add('active');
+    else btn.classList.remove('active');
+  });
+  renderGrid();
+}
+
+/* ---------- PROJECT VAULT (IN-APP SAVE) ---------- */
+function getProjects(){
+  try{ return JSON.parse(localStorage.getItem('ks1_projects_v2')||'[]'); }catch(e){ return []; }
+}
+function saveProjectsList(list){
+  localStorage.setItem('ks1_projects_v2', JSON.stringify(list));
+}
+function saveProject(isQuick){
+  var nameInput = document.getElementById('projectName');
+  var name = nameInput.value.trim();
+  if(!name){
+    var sec = state.profile.gradesec || 'Class';
+    var subj = state.profile.subject || 'Subject';
+    name = sec + ' - ' + subj + ' - ' + new Date().toLocaleDateString();
+  }
+  var projects = getProjects();
+  var snapshot = JSON.parse(JSON.stringify(state));
+  var project = {
+    id: Date.now().toString(),
+    name: name,
+    timestamp: new Date().toISOString(),
+    studentCount: state.students.length,
+    profile: Object.assign({}, state.profile)
+  };
+  // store snapshot separately to avoid bloating list preview? store in same object for simplicity
+  project.data = snapshot;
+  projects.unshift(project);
+  // keep max 20 projects
+  if(projects.length>20) projects = projects.slice(0,20);
+  saveProjectsList(projects);
+  nameInput.value='';
+  renderProjectVault();
+  wrapAllExportButtonsWithSmartlink();
+  save(); // also update auto save
+  if(isQuick) alert('Draft saved in-app: '+name);
+  else showStatus('Project saved in-app: '+name, 'success');
+}
+function renderProjectVault(){
+  var list = getProjects();
+  var container = document.getElementById('projectList');
+  if(!list.length){
+    container.innerHTML='<p class="text-xs text-center py-3" style="color:var(--muted)">No saved projects yet. Your unfinished data will appear here, stored inside the app.</p>';
+    return;
+  }
+  container.innerHTML = list.map(function(p){
+    var date = new Date(p.timestamp);
+    return '<div class="p-3 rounded-xl" style="background:#f8fafc;border:1px solid var(--border)"><div class="flex justify-between items-start gap-2"><div class="flex-1"><div class="font-semibold text-sm truncate">'+escapeHtml(p.name)+'</div><div class="text-[11px]" style="color:var(--muted)">'+date.toLocaleString()+' · '+p.studentCount+' learners · '+(p.profile.gradesec||'')+'</div></div><span class="pill text-[10px]" style="background:#fef3c7;color:#92400e">IN-APP</span></div><div class="flex gap-1.5 mt-2"><button class="btn btn-primary text-xs flex-1" style="padding:6px" onclick="loadProject(\''+p.id+'\')">Load & Edit</button><button class="btn btn-ghost text-xs" style="padding:6px" onclick="deleteProject(\''+p.id+'\')">Delete</button></div></div>';
+  }).join('');
+}
+function loadProject(id){
+  if(!confirm('Load this saved project? Current unsaved changes will be kept in auto-save but will be replaced in the working draft.')) return;
+  var projects = getProjects();
+  var p = projects.find(x=>x.id===id);
+  if(!p || !p.data){ alert('Project data not found'); return; }
+  state = p.data;
+  // ensure gender exists
+  state.students = state.students.map(s=>{ if(typeof s==='string') return {id: Date.now().toString()+Math.random().toString(36).slice(2), name:s, gender:'male'}; if(!s.gender) s.gender='male'; return s; });
+  save();
+  // refresh UI
+  ['region','division','school','schoolid','gradesec','subject','teacher','sy'].forEach(function(k){
+    var el=document.getElementById(k); if(el) el.value = state.profile[k] || (k==='sy'?'2026-2027':'');
+  });
+  renderStudentList(); renderGrid();
+  showStatus('Loaded project: '+p.name+' — you can continue editing and export final output.', 'success');
+}
+function deleteProject(id){
+  if(!confirm('Delete this saved project from in-app storage? This cannot be undone.')) return;
+  var projects = getProjects().filter(p=>p.id!==id);
+  saveProjectsList(projects);
+  renderProjectVault();
+  wrapAllExportButtonsWithSmartlink();
+}
+
+/* ---------- EXPORT ---------- */
+function makeRow(len){ var r=[]; for(var i=0;i<len;i++) r.push(''); return r; }
+function doExportExcel() {
+  if(!state.students.length){ alert('Add learners first.'); return; }
+  // Ensure sorted Male -> Female
+  sortStudents(false);
+  var wb = XLSX.utils.book_new();
+  var p = state.profile;
+  // -- 1. INPUT TAB --
+  var inAoA = [];
+  var r = makeRow(30); r[0] = 'Class Record'; inAoA.push(r);
+  inAoA.push(makeRow(30));
+  r = makeRow(30); r[0] = '(Waiting for the Official DepEd Order)'; inAoA.push(r);
+  r = makeRow(30); r[1] = 'REGION'; r[8] = 'DIVISION'; r[6] = p.region; r[11] = p.division; inAoA.push(r);
+  r = makeRow(30); r[1] = 'SCHOOL NAME'; r[16] = 'SCHOOL ID'; r[21] = 'SCHOOL YEAR'; r[6] = p.school; r[18] = p.schoolid; r[24] = p.sy; inAoA.push(r);
+  inAoA.push(makeRow(30));
+  r = makeRow(30); r[5] = 'GRADE & SECTION: '; r[13] = 'TEACHER:'; r[22] = 'SUBJECT:'; r[9] = p.gradesec; r[16] = p.teacher; r[24] = p.subject; inAoA.push(r);
+  r = makeRow(30); r[1] = "LEARNERS' NAMES"; inAoA.push(r);
+  inAoA.push(makeRow(30));
+  r = makeRow(30); r[1] = 'HIGHEST POSSIBLE SCORE'; inAoA.push(r);
+
+  // Grouped export MALE / FEMALE
+  var males = state.students.filter(s=>s.gender==='male');
+  var females = state.students.filter(s=>s.gender==='female');
+  if(males.length){
+    r = makeRow(30); r[1] = 'MALE '; inAoA.push(r);
+    males.forEach(function(s, i) { r = makeRow(30); r[0] = i+1; r[1] = s.name; inAoA.push(r); });
+  }
+  if(females.length){
+    r = makeRow(30); r[1] = 'FEMALE '; inAoA.push(r);
+    females.forEach(function(s, i) { r = makeRow(30); r[0] = males.length + i +1; r[1] = s.name; inAoA.push(r); });
+  }
+  if(!males.length && !females.length){
+    state.students.forEach(function(s, i) { r = makeRow(30); r[0] = i+1; r[1] = s.name; inAoA.push(r); });
+  }
+  var wsInput = XLSX.utils.aoa_to_sheet(inAoA);
+  wsInput['!pageSetup'] = { paperSize: 9, orientation: 'landscape' };
+  XLSX.utils.book_append_sheet(wb, wsInput, 'INPUT');
+
+  // -- 2. TERM TABS --
+  [1, 2, 3].forEach(function(term) {
+    var termAoA = [];
+    var h = state.hps[term];
+    r = makeRow(50); r[0] = 'Class Record'; termAoA.push(r);
+    termAoA.push(makeRow(50));
+    termAoA.push(makeRow(50));
+    r = makeRow(50); r[1] = 'REGION'; r[6] = {f: "INPUT!G4"}; r[8] = 'DIVISION'; r[11] = {f: "INPUT!L4"}; termAoA.push(r);
+    r = makeRow(50); r[1] = 'SCHOOL NAME'; r[6] = {f: "INPUT!G5"}; r[16] = 'SCHOOL ID'; r[18] = {f: "INPUT!S5"}; r[21] = 'SCHOOL YEAR'; r[25] = {f: "INPUT!Y5"}; termAoA.push(r);
+    termAoA.push(makeRow(50));
+    r = makeRow(50); r[0] = 'TERM ' + term; r[5] = 'GRADE & SECTION: '; r[9] = {f: "INPUT!J7"}; r[13] = 'TEACHER:'; r[16] = {f: "INPUT!Q7"}; r[23] = 'SUBJECT:'; r[25] = {f: "INPUT!Y7"}; termAoA.push(r);
+    r = makeRow(50); r[1] = "LEARNERS' NAMES"; r[5] = 'WRITTEN / ORAL WORKS (20%)'; r[13] = 'PRODUCT / PERFORMANCE TASKS (50%)'; r[19] = 'SUMMATIVE TESTS AND TERM EXAMINATIONS (30%)'; r[25] = 'Initial Grade'; r[26] = 'TERM GRADE'; r[27] = 'DESCRIPTOR'; termAoA.push(r);
+    r = makeRow(50); r[5]=1; r[6]=2; r[7]=3; r[8]=4; r[9]=5; r[10]='Total'; r[11]='PS'; r[12]='WS';
+    r[13]=1; r[14]=2; r[15]=3; r[16]='Total'; r[17]='PS'; r[18]='WS';
+    r[19]='ST1'; r[20]='ST2'; r[21]='TE'; r[22]='Total'; r[23]='PS'; r[24]='WS'; termAoA.push(r);
+    r = makeRow(50); r[1]='HIGHEST POSSIBLE SCORE'; 
+    r[5]=h.ww1; r[6]=h.ww2; r[7]=h.ww3; r[8]=h.ww4; r[9]=h.ww5; r[10]={f: 'SUM(F10:J10)'}; r[11]=100; r[12]=0.2;
+    r[13]=h.pt1; r[14]=h.pt2; r[15]=h.pt3; r[16]={f: 'SUM(N10:P10)'}; r[17]=100; r[18]=0.5;
+    r[19]=h.st1; r[20]=h.st2; r[21]=h.te; r[22]={f: 'SUM(T10:V10)'}; r[23]=100; r[24]=0.3; termAoA.push(r);
+    
+    var idx=0;
+    function pushGroup(label, group){
+      if(!group.length) return;
+      r = makeRow(50); r[1] = label; termAoA.push(r);
+      group.forEach(function(s){
+        var sc = state.scores[s.id] && state.scores[s.id][term] || {};
+        var computed = computeStudent(s.id, term);
+        var rIdx = 12 + idx;
+        r = makeRow(50);
+        r[0] = idx+1;
+        r[1] = s.name;
+        r[5] = sc.ww1||''; r[6] = sc.ww2||''; r[7] = sc.ww3||''; r[8] = sc.ww4||''; r[9] = sc.ww5||'';
+        r[10] = {f: `SUM(F${rIdx}:J${rIdx})`}; r[11] = {f: `IF(K10>0, (K${rIdx}/K10)*100, "")`}; r[12] = {f: `IF(L${rIdx}<>"", L${rIdx}*M10, "")`};
+        r[13] = sc.pt1||''; r[14] = sc.pt2||''; r[15] = sc.pt3||'';
+        r[16] = {f: `SUM(N${rIdx}:P${rIdx})`}; r[17] = {f: `IF(Q10>0, (Q${rIdx}/Q10)*100, "")`}; r[18] = {f: `IF(R${rIdx}<>"", R${rIdx}*S10, "")`};
+        r[19] = sc.st1||''; r[20] = sc.st2||''; r[21] = sc.te||'';
+        r[22] = {f: `SUM(T${rIdx}:V${rIdx})`}; r[23] = {f: `IF(W10>0, (W${rIdx}/W10)*100, "")`}; r[24] = {f: `IF(X${rIdx}<>"", X${rIdx}*Y10, "")`};
+        r[25] = {f: `IF(COUNT(M${rIdx},S${rIdx},Y${rIdx})>0, SUM(M${rIdx},S${rIdx},Y${rIdx}), "")`}; 
+        r[26] = computed.tg !== null ? computed.tg : '';
+        r[27] = computed.desc || '';
+        termAoA.push(r);
+        idx++;
+      });
+    }
+    pushGroup('MALE ', males);
+    pushGroup('FEMALE ', females);
+    if(!males.length && !females.length){
+      state.students.forEach(function(s){ 
+        var sc = state.scores[s.id] && state.scores[s.id][term] || {};
+        var computed = computeStudent(s.id, term);
+        var rIdx = 12 + idx;
+        r = makeRow(50); r[0] = idx+1; r[1] = s.name;
+        r[5] = sc.ww1||''; r[6] = sc.ww2||''; r[7] = sc.ww3||''; r[8] = sc.ww4||''; r[9] = sc.ww5||'';
+        r[10] = {f: `SUM(F${rIdx}:J${rIdx})`}; r[11] = {f: `IF(K10>0, (K${rIdx}/K10)*100, "")`}; r[12] = {f: `IF(L${rIdx}<>"", L${rIdx}*M10, "")`};
+        r[13] = sc.pt1||''; r[14] = sc.pt2||''; r[15] = sc.pt3||'';
+        r[16] = {f: `SUM(N${rIdx}:P${rIdx})`}; r[17] = {f: `IF(Q10>0, (Q${rIdx}/Q10)*100, "")`}; r[18] = {f: `IF(R${rIdx}<>"", R${rIdx}*S10, "")`};
+        r[19] = sc.st1||''; r[20] = sc.st2||''; r[21] = sc.te||'';
+        r[22] = {f: `SUM(T${rIdx}:V${rIdx})`}; r[23] = {f: `IF(W10>0, (W${rIdx}/W10)*100, "")`}; r[24] = {f: `IF(X${rIdx}<>"", X${rIdx}*Y10, "")`};
+        r[25] = {f: `IF(COUNT(M${rIdx},S${rIdx},Y${rIdx})>0, SUM(M${rIdx},S${rIdx},Y${rIdx}), "")`}; 
+        r[26] = computed.tg !== null ? computed.tg : '';
+        r[27] = computed.desc || '';
+        termAoA.push(r); idx++;
+      });
+    }
+    var wsTerm = XLSX.utils.aoa_to_sheet(termAoA);
+    wsTerm['!pageSetup'] = { paperSize: 9, orientation: 'landscape' };
+    XLSX.utils.book_append_sheet(wb, wsTerm, 'TERM' + term);
+  });
+
+  // -- 3. SUMMARY --
+  var sumAoA = [];
+  r = makeRow(30); r[0] = 'Summary of Quarterly Grades'; sumAoA.push(r);
+  sumAoA.push(makeRow(30)); sumAoA.push(makeRow(30)); sumAoA.push(makeRow(30));
+  r = makeRow(30); r[1] = 'REGION'; r[6] = {f: "INPUT!G4"}; r[11] = 'DIVISION'; r[14] = {f: "INPUT!L4"}; sumAoA.push(r);
+  r = makeRow(30); r[1] = 'SCHOOL NAME'; r[6] = {f: "INPUT!G5"}; r[18] = 'SCHOOL ID'; r[22] = {f: "INPUT!S5"}; sumAoA.push(r);
+  sumAoA.push(makeRow(30));
+  r = makeRow(30); r[1] = "LEARNERS' NAMES"; r[5] = 'GRADE & SECTION: '; r[10] = {f: "INPUT!J7"}; r[18] = 'SCHOOL YEAR:'; r[22] = {f: "INPUT!Y5"}; sumAoA.push(r);
+  r = makeRow(30); r[5] = 'TEACHER:'; r[10] = {f: "INPUT!Q7"}; r[18] = 'SUBJECT:'; r[22] = {f: "INPUT!Y7"}; sumAoA.push(r);
+  r = makeRow(30); r[5] = 'TERM 1'; r[9] = 'TERM 2'; r[13] = 'TERM 3'; r[17] = 'FINAL GRADE'; r[21] = 'DESCRIPTOR'; r[25] = 'REMARK'; sumAoA.push(r);
+  sumAoA.push(makeRow(30));
+  var allGrouped = [...males, ...females];
+  if(!allGrouped.length) allGrouped = state.students;
+  var maleDone=false, femaleDone=false;
+  allGrouped.forEach(function(s, idx){
+    if(s.gender==='male' && !maleDone){ r = makeRow(30); r[1] = 'MALE '; sumAoA.push(r); maleDone=true; }
+    if(s.gender==='female' && !femaleDone && males.length){ r = makeRow(30); r[1] = 'FEMALE '; sumAoA.push(r); femaleDone=true; }
+    var t1 = computeStudent(s.id, 1).tg;
+    var t2 = computeStudent(s.id, 2).tg;
+    var t3 = computeStudent(s.id, 3).tg;
+    var fg = null;
+    if (t1 !== null && t2 !== null && t3 !== null) fg = Math.round((t1 + t2 + t3) / 3);
+    r = makeRow(30);
+    r[0] = idx+1; 
+    r[1] = s.name;
+    r[5] = t1 !== null ? t1 : '';
+    r[9] = t2 !== null ? t2 : '';
+    r[13] = t3 !== null ? t3 : '';
+    r[17] = fg !== null ? fg : '';
+    r[21] = fg !== null ? descriptor(fg) : '';
+    r[25] = fg !== null ? (fg >= 75 ? 'PASSED' : 'FAILED') : '';
+    sumAoA.push(r);
+  });
+  var wsSum = XLSX.utils.aoa_to_sheet(sumAoA);
+  wsSum['!pageSetup'] = { paperSize: 9, orientation: 'landscape' };
+  XLSX.utils.book_append_sheet(wb, wsSum, 'SUMMARY OF GRADES');
+  XLSX.writeFile(wb, "TRITERM-E-CLASS-RECORD.xlsx");
+}
+
+
+/* ---------- ADSTERRA SMARTLINK MODAL LOGIC (In-Page, No New Tab) ---------- */
+var pendingExportCallback = null;
+var countdownInterval = null;
+
+function triggerExportWithAd(){
+  if(!state.students.length){ alert('Add learners first.'); return; }
+  // Show modal without opening new tab/window
+  var modal = document.getElementById('adCountdownModal');
+  modal.style.display='flex';
+  modal.classList.add('show');
+  
+  // Load smartlink in iframe SAME PAGE (no new tab) - this counts as ad view
+  var frame = document.getElementById('smartlinkFrame');
+  var placeholder = document.getElementById('adPlaceholder');
+  try{
+    // Load smartlink in iframe to keep on same page
+    frame.src = 'https://www.effectivecpmnetwork.com/dy6fc6chs?key=a57b08df820761100a553e372b756843';
+    // Optionally show iframe after short delay
+    setTimeout(function(){ 
+      // Keep placeholder visible to show banner too, but try to show frame
+      // frame.style.display='block'; 
+      // For better UX, keep banner placeholder
+    }, 500);
+  }catch(e){ console.log('ad iframe blocked', e); }
+  
+  // Reset UI
+  document.getElementById('countdownSection').style.display='block';
+  document.getElementById('readySection').style.display='none';
+  var countEl = document.getElementById('countdownNum');
+  var progressEl = document.getElementById('countdownProgress');
+  var count = 10;
+  countEl.textContent = count;
+  progressEl.style.width = '100%';
+  
+  if(countdownInterval) clearInterval(countdownInterval);
+  countdownInterval = setInterval(function(){
+    count--;
+    countEl.textContent = count;
+    progressEl.style.width = (count*10)+'%';
+    if(count<=0){
+      clearInterval(countdownInterval);
+      document.getElementById('countdownSection').style.display='none';
+      document.getElementById('readySection').style.display='block';
+    }
+  }, 1000);
+}
+
+function closeAdModal(){
+  var modal = document.getElementById('adCountdownModal');
+  modal.style.display='none';
+  modal.classList.remove('show');
+  if(countdownInterval) clearInterval(countdownInterval);
+  // Do not clear iframe src to keep ad session same page
+}
+
+function exportExcel(){
+  // Wrapper that triggers ad modal instead of direct download
+  triggerExportWithAd();
+}
+
+// Final download button inside modal
+document.addEventListener('DOMContentLoaded', function(){
+  var btn = document.getElementById('finalDownloadBtn');
+  if(btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      // Close modal and trigger actual download
+      closeAdModal();
+      // Small delay to allow ad to count
+      setTimeout(function(){
+        doExportExcel();
+      }, 300);
+    });
+  }
+  // Close modal when clicking outside
+  var modal = document.getElementById('adCountdownModal');
+  if(modal){
+    modal.addEventListener('click', function(e){
+      if(e.target===modal){
+        // Prevent accidental close during countdown? Allow close only after ready?
+        // For UX, allow close only after countdown finished
+        var ready = document.getElementById('readySection');
+        if(ready.style.display!=='none'){
+          closeAdModal();
+        }
+      }
+    });
+  }
+});
+
+// Make all export/download buttons use smartlink wrapper (in case of future buttons)
+function wrapAllExportButtonsWithSmartlink(){
+  document.querySelectorAll('button').forEach(function(b){
+    var txt = (b.textContent||'').toLowerCase();
+    if(txt.includes('export') && txt.includes('excel')){
+      // Ensure it calls our wrapper
+      b.setAttribute('onclick', 'exportExcel()');
+      b.setAttribute('data-smartlink', 'https://www.effectivecpmnetwork.com/dy6fc6chs?key=a57b08df820761100a553e372b756843');
+    }
+  });
+}
+
+window.onload = function(){
+  load();
+  ['region','division','school','schoolid','gradesec','subject','teacher','sy'].forEach(function(k){
+    var el = document.getElementById(k);
+    if(el){
+      el.value = state.profile[k] || (k==='sy'?'2026-2027':'');
+      el.addEventListener('input', function(){ state.profile[k] = this.value; save(); });
+    }
+  });
+  renderStudentList();
+  renderGrid();
+  renderProjectVault();
+  wrapAllExportButtonsWithSmartlink();
+
+  var dropzone = document.getElementById('dropzone');
+  var fileInput = document.getElementById('smartFile');
+  dropzone.addEventListener('click', ()=> fileInput.click());
+  dropzone.addEventListener('dragover', (e)=>{ e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', ()=> dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', (e)=>{
+    e.preventDefault(); dropzone.classList.remove('dragover');
+    if(e.dataTransfer.files.length) handleSmartFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', (e)=>{
+    if(e.target.files.length) handleSmartFile(e.target.files[0]);
+  });
+  document.addEventListener('click', function(e){
+    if(e.target.classList.contains('import-check')){
+      updateImportBtnCount();
+    }
+  });
+};
+</script>
+</html>
