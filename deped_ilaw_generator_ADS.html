@@ -51,12 +51,35 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
 
-    <!-- Adsterra Top Banner -->
-    <div class="w-full bg-white border-b shadow-sm flex flex-col items-center justify-center py-2 px-2">
+    <!-- Adsterra Top Banner - Fixed non-blocking version -->
+    <div id="adsterra-top-banner" class="w-full bg-white border-b shadow-sm flex flex-col items-center justify-center py-2 px-2 min-h-[60px]">
         <span class="text-[9px] text-gray-400 uppercase tracking-widest mb-1">Advertisement</span>
         <div id="container-b7c6fd92cffbaecadb20942736510a90"></div>
-        <script async="async" data-cfasync="false" src="https://pl30524144.effectivecpmnetwork.com/b7c6fd92cffbaecadb20942736510a90/invoke.js"><\/script>
     </div>
+    <script>
+    // Load Adsterra banner AFTER page parse - prevents banner from blocking main content
+    (function() {
+        function loadAdsterraBanner() {
+            try {
+                var s = document.createElement('script');
+                s.async = true;
+                s.setAttribute('data-cfasync','false');
+                s.src = 'https://pl30524144.effectivecpmnetwork.com/b7c6fd92cffbaecadb20942736510a90/invoke.js';
+                s.onerror = function() { 
+                    console.warn('Adsterra banner failed to load'); 
+                    // Optionally hide banner wrapper if ad fails, so it doesn't leave empty space
+                    // var b=document.getElementById('adsterra-top-banner'); if(b) b.style.minHeight='0';
+                };
+                document.head.appendChild(s);
+            } catch(e) { console.warn('Ad load error', e); }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadAdsterraBanner);
+        } else {
+            loadAdsterraBanner();
+        }
+    })();
+    </script>
 
     <div class="container mx-auto px-4 py-6 max-w-5xl">
         <header class="bg-white rounded-lg shadow p-5 mb-6 border-l-4 border-deped">
@@ -250,9 +273,8 @@ const cleanTxt = (t) => {
     if (!t) return 'N/A';
     if (typeof t === 'object') return JSON.stringify(t);
     return String(t)
-        .replace(/[​-‍﻿]/g, "") 
-        .replace(/[ -
--]/g, "") 
+        .replace(/[\u200B-\u200D\uFEFF]/g, "")
+        .replace(/[\x00-\x1F\x7F-\x9F]/g, "")
         .trim();
 };
 
@@ -616,8 +638,11 @@ async function doExportDocx() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    initSubjectDropdown();
+function initializeApp() {
+    try {
+        initSubjectDropdown();
+        console.log('ILAW App Initialized');
+    } catch(e) { console.warn('Init dropdown failed', e); }
     
     const genBtn = document.getElementById('generateBtn');
     if(genBtn) {
@@ -634,6 +659,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const btn = document.getElementById('generateBtn');
             btn.classList.add('loading');
+            btn.disabled = true;
             btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Organizing Curriculum Standards...';
             const outCont = document.getElementById('outputContainer');
             if(outCont) outCont.classList.add('hidden');
@@ -656,7 +682,7 @@ The response must be a single flat JSON object structure matching the blueprint 
 
 CRITICAL INSTRUCTION FOR "lessonProper":
 Describe the classroom activities implemented from the first part to the last part of the flow to meet the objectives.
-You MUST format this field strictly as a single text block consisting of a clearly ordered NUMBERED LIST (e.g., "1. [Activity details...] \n2. [Next activity...] \n3. [Following activity...]") across the session keys (s1 to s5). 
+You MUST format this field strictly as a single text block consisting of a clearly ordered NUMBERED LIST (e.g., "1. [Activity details...] \\n2. [Next activity...] \\n3. [Following activity...]") across the session keys (s1 to s5). 
 Ensure the sequence applies the 7 Learning Design Principles by explicitly addressing how to:
 1. Make objectives crystal clear to learners at the onset.
 2. Guide/scaffold learners before letting them try tasks on their own.
@@ -696,11 +722,11 @@ Return ONLY a valid JSON object matching this structural schema template exactly
   "objectives": { "s1": "String", "s2": "String", "s3": "String", "s4": "String", "s5": "String" },
   "learnerContext": { "s1": "String", "s2": "String", "s3": "String", "s4": "String", "s5": "String" },
   "preLesson": { "s1": "String", "s2": "String", "s3": "String", "s4": "String", "s5": "String" },
-  "lessonProper": { "s1": "1. ... \n2. ...", "s2": "1. ... \n2. ...", "s3": "1. ... \n2. ...", "s4": "1. ... \n2. ...", "s5": "1. ... \n2. ..." },
+  "lessonProper": { "s1": "1. ... \\n2. ...", "s2": "1. ... \\n2. ...", "s3": "1. ... \\n2. ...", "s4": "1. ... \\n2. ...", "s5": "1. ... \\n2. ..." },
   "resources": { "s1": "String", "s2": "String", "s3": "String", "s4": "String", "s5": "String" },
   "integration": { "s1": "String", "s2": "String", "s3": "String", "s4": "String", "s5": "String" },
   "assessment": { 
-    "s1": "1. Multiple Choice\nPanuto: Tukuyin ang bagay sa larawan.\n\nAlin ito?\nA. papel\nB. libro\nC. lapis\nD. upuan\nSagot: B. libro\n\nSupport Lifeline: ...\nAccommodations: ...", 
+    "s1": "1. Multiple Choice\\nPanuto: Tukuyin ang bagay sa larawan.\\n\\nAlin ito?\\nA. papel\\nB. libro\\nC. lapis\\nD. upuan\\nSagot: B. libro\\n\\nSupport Lifeline: ...\\nAccommodations: ...", 
     "s2": "...", "s3": "...", "s4": "...", "s5": "..." 
   },
   "extendedLearning": { "s1": "String", "s2": "String", "s3": "String", "s4": "String", "s5": "String" },
@@ -771,9 +797,12 @@ Return ONLY a valid JSON object matching this structural schema template exactly
                 alert(`Generation Fault: ${error.message}\n\n(Tip: If it says "Failed to fetch", your browser is blocking the request due to CORS, or your Mistral API key has expired. Please check the browser console for exact details.)`);
             } finally {
                 btn.classList.remove('loading');
+                btn.disabled = false;
                 btn.innerHTML = '<i class="fa fa-magic"></i> Generate ILAW Lesson Plan';
             }
         });
+    } else {
+        console.error('Generate button not found!');
     }
 
     const expPdfBtn = document.getElementById('exportPdfBtn');
@@ -800,7 +829,13 @@ Return ONLY a valid JSON object matching this structural schema template exactly
             if (e.target === this) hideAdGateModal();
         });
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    initializeApp();
+}
     </script>
 </body>
 </html>
