@@ -50,38 +50,7 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-
-    <!-- Adsterra Top Banner - Fixed non-blocking version -->
-    <div id="adsterra-top-banner" class="w-full bg-white border-b shadow-sm flex flex-col items-center justify-center py-2 px-2 min-h-[60px]">
-        <span class="text-[9px] text-gray-400 uppercase tracking-widest mb-1">Advertisement</span>
-        <div id="container-b7c6fd92cffbaecadb20942736510a90"></div>
-    </div>
-    <script>
-    // Load Adsterra banner AFTER page parse - prevents banner from blocking main content
-    (function() {
-        function loadAdsterraBanner() {
-            try {
-                var s = document.createElement('script');
-                s.async = true;
-                s.setAttribute('data-cfasync','false');
-                s.src = 'https://pl30524144.effectivecpmnetwork.com/b7c6fd92cffbaecadb20942736510a90/invoke.js';
-                s.onerror = function() { 
-                    console.warn('Adsterra banner failed to load'); 
-                    // Optionally hide banner wrapper if ad fails, so it doesn't leave empty space
-                    // var b=document.getElementById('adsterra-top-banner'); if(b) b.style.minHeight='0';
-                };
-                document.head.appendChild(s);
-            } catch(e) { console.warn('Ad load error', e); }
-        }
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', loadAdsterraBanner);
-        } else {
-            loadAdsterraBanner();
-        }
-    })();
-    </script>
-
-    <div class="container mx-auto px-4 py-6 max-w-5xl">
+<div class="container mx-auto px-4 py-6 max-w-5xl">
         <header class="bg-white rounded-lg shadow p-5 mb-6 border-l-4 border-deped">
             <div>
                 <h1 class="text-2xl md:text-3xl font-bold text-depedDark flex items-center gap-3">
@@ -837,5 +806,23 @@ if (document.readyState === 'loading') {
     initializeApp();
 }
     </script>
+
+    <!-- Adsterra Banner 320x50 - Bottom -->
+    <div class="w-full bg-white border-t shadow-sm flex flex-col items-center justify-center py-3 px-2 mt-8">
+        <span class="text-[9px] text-gray-400 uppercase tracking-widest mb-1">Advertisement</span>
+        <div class="flex justify-center">
+            <script>
+              atOptions = {
+                'key' : 'b601313398f61e1ce9242c089d626322',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+              };
+            </script>
+            <script src="https://www.highperformanceformat.com/b601313398f61e1ce9242c089d626322/invoke.js"></script>
+        </div>
+    </div>
+
 </body>
 </html>
