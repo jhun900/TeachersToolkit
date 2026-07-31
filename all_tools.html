@@ -73,7 +73,7 @@ body{font-family:'Inter',sans-serif}
 <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
 All tools work offline • No login required
 </div>
-<a href="index_2.html" class="flex items-center justify-center gap-2 w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2.5 rounded-xl text-[13px] transition">
+<a href="https://jhun900.github.io/TeachersToolkit/" class="flex items-center justify-center gap-2 w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2.5 rounded-xl text-[13px] transition">
 <i class="fa fa-home"></i> Back to Home
 </a>
 </div>
@@ -171,7 +171,7 @@ desc:'Professional item analysis with difficulty & discrimination index, charts,
 {
 id:'crl',
 name:'CRLA-based Reading Intervention',
-file:'CRLAbased Reading Intervention Plan Maker with ILMP.html',
+file:'CRLAbased_Reading_Intervention_Plan_Maker_with_ILMP.html',
 icon:'fa-book-open-reader',
 color:'bg-emerald-50 text-emerald-600',
 badge:'Reading Tool',
@@ -181,7 +181,7 @@ desc:'Comprehensive Rapid Literacy Assessment with ILMP generation.'
 {
 id:'philiri',
 name:'PhilIRI-based Intervention Plan',
-file:'PhilIRI-based Intervention Plan Maker with ILMP.html',
+file:'PhilIRI-based_Intervention_Plan_Maker_with_ILMP.html',
 icon:'fa-file-signature',
 color:'bg-blue-50 text-blue-600',
 badge:'Assessment',
@@ -191,7 +191,7 @@ desc:'Philippine Informal Reading Inventory plan maker for reading profiles.'
 {
 id:'tos',
 name:'DepEd Assessment & TOS Generator',
-file:'DepEd Assessment & TOS Generator.html',
+file:'DepEd_Assessment_TOS_Generator.html',
 icon:'fa-clipboard-check',
 color:'bg-amber-50 text-amber-600',
 badge:'NEW • TOS',
@@ -211,7 +211,7 @@ desc:'Official ILAW Matrix Layout aligned to DO 3, s. 2026 with PDF/DOCX.'
 {
 id:'eclass',
 name:'E-Class Record Portal G2 & G3',
-file:'E-Class Record Portal for Grades 2 & 3.html',
+file:'E-Class_Record_Portal_for_Grades_2_3.html',
 icon:'fa-table',
 color:'bg-teal-50 text-teal-600',
 badge:'Class Record',
@@ -221,7 +221,7 @@ desc:'Digital class record for Grades 2 & 3 with auto-computation.'
 {
 id:'sf9',
 name:'SF9 Maker',
-file:'SF9 Maker.html',
+file:'SF9_Maker.html',
 icon:'fa-id-card',
 color:'bg-purple-50 text-purple-600',
 badge:'Report Card',
@@ -253,10 +253,9 @@ const loader = document.getElementById('loader');
 let activeTool = null;
 
 function createToolButton(tool, isCard=false){
-  const escFile = tool.file.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-  if(isCard){
-    return `
-<div class="tool-card bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-lg hover:border-blue-200 transition-all group cursor-pointer" data-file="${escFile}" data-id="${tool.id}">
+if(isCard){
+return `
+<div class="tool-card bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-lg hover:border-blue-200 transition-all group cursor-pointer" data-file="${tool.file}" data-id="${tool.id}">
 <div class="flex items-start justify-between mb-3">
 <div class="w-11 h-11 rounded-xl ${tool.color} flex items-center justify-center text-[18px] group-hover:scale-110 transition-transform"><i class="fa ${tool.icon}"></i></div>
 <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 border">${tool.badge}</span>
@@ -268,9 +267,9 @@ function createToolButton(tool, isCard=false){
 <span class="text-[11px] text-slate-400 font-mono truncate">${tool.file}</span>
 </div>
 </div>`;
-  }else{
-    return `
-<button class="tool-btn w-full text-left bg-white border border-slate-200 rounded-xl p-3 hover:border-blue-300 hover:shadow-sm transition-all flex gap-3 items-start group" data-file="${escFile}" data-id="${tool.id}">
+}else{
+return `
+<button class="tool-btn w-full text-left bg-white border border-slate-200 rounded-xl p-3 hover:border-blue-300 hover:shadow-sm transition-all flex gap-3 items-start group" data-file="${tool.file}" data-id="${tool.id}">
 <div class="w-10 h-10 rounded-xl ${tool.color} flex items-center justify-center text-[16px] shrink-0 tool-icon transition-colors"><i class="fa ${tool.icon}"></i></div>
 <div class="flex-1 min-w-0">
 <div class="flex items-center gap-2">
@@ -280,7 +279,7 @@ function createToolButton(tool, isCard=false){
 <p class="text-[11px] text-slate-400 line-clamp-1 mt-0.5">${tool.desc}</p>
 </div>
 </button>`;
-  }
+}
 }
 
 function renderTools(filter=''){
