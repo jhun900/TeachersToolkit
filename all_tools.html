@@ -103,36 +103,18 @@ All tools work offline • No login required
 <!-- Content Area -->
 <div class="flex-1 overflow-hidden relative bg-[#f1f5f9]">
 
-<!-- Welcome View -->
-<div id="welcomeView" class="absolute inset-0 overflow-y-auto scrollbar-thin p-4 md:p-8">
-<div class="max-w-6xl mx-auto space-y-8">
-
-<div class="bg-gradient-to-br from-[#004B87] to-[#00335C] rounded-[1.5rem] p-6 md:p-8 text-white relative overflow-hidden">
-<div class="absolute -right-10 -top-10 w-60 h-60 bg-white/10 rounded-full blur-2xl"></div>
-<div class="absolute -left-10 -bottom-10 w-40 h-40 bg-blue-400/20 rounded-full blur-xl"></div>
-<div class="relative">
-<div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-[11px] font-bold px-3 py-1 rounded-full mb-3">NEW • Dashboard v2.0 • Live Preview</div>
-<h1 class="jakarta text-2xl md:text-3xl font-extrabold leading-tight">All Tools in One Dashboard</h1>
-<p class="text-blue-100 text-[14px] mt-2 max-w-2xl leading-relaxed">No more switching tabs. Select any tool from the left sidebar and it loads instantly on the right as a live preview. Professional, fast, and clean.</p>
-<div class="mt-5 flex flex-wrap gap-2">
-<span class="inline-flex items-center gap-1.5 bg-white text-[#004B87] text-[12px] font-bold px-3 py-1.5 rounded-full"><i class="fa fa-bolt"></i> Instant Preview</span>
-<span class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 text-[12px] font-semibold px-3 py-1.5 rounded-full"><i class="fa fa-desktop"></i> No Redirect</span>
-<span class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 text-[12px] font-semibold px-3 py-1.5 rounded-full"><i class="fa fa-mobile"></i> Mobile Friendly</span>
-</div>
-</div>
-</div>
-
-<div id="welcomeGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
-
-<div class="bg-white rounded-2xl border border-slate-200 p-5 flex items-center gap-3">
-<div class="w-10 h-10 rounded-xl bg-blue-50 text-[#004B87] flex items-center justify-center"><i class="fa fa-lightbulb-o"></i></div>
-<div>
-<p class="text-sm font-semibold text-slate-800">Tip: Use search to filter tools quickly</p>
-<p class="text-[12px] text-slate-500">Type "TOS", "SF9", "ILAW", "CRLA", etc. in the left search box.</p>
-</div>
-</div>
-
-</div>
+<!-- Welcome View - CLEAN EMPTY STATE -->
+<div id="welcomeView" class="absolute inset-0 bg-[#f8fafc] flex flex-col items-center justify-center p-8">
+  <div class="flex flex-col items-center justify-center text-center max-w-md">
+    <div class="w-24 h-24 rounded-[1.5rem] bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-300 text-[32px] mb-5">
+      <i class="fa fa-th-large"></i>
+    </div>
+    <h3 class="jakarta font-extrabold text-slate-800 text-[18px]">No tool selected</h3>
+    <p class="text-[13px] text-slate-500 mt-2 leading-relaxed">Preview area is intentionally clean and empty.<br>Click any tool from the left sidebar to load it here instantly.</p>
+    <div class="mt-6 inline-flex items-center gap-2 bg-white border border-slate-200 text-[11px] font-semibold text-slate-600 px-4 py-2 rounded-full shadow-sm">
+      <i class="fa fa-arrow-left text-slate-400"></i> Choose a tool to start
+    </div>
+  </div>
 </div>
 
 <!-- Preview View -->
@@ -255,8 +237,9 @@ const groups = {
 'records': document.getElementById('group-records')
 };
 
-const welcomeGrid = document.getElementById('welcomeGrid');
+const welcomeGrid = document.getElementById('welcomeGrid'); // kept for compatibility - preview stays empty
 const searchInput = document.getElementById('searchTools');
+const welcomeGridEl = document.getElementById('welcomeGrid'); // may be null in clean mode
 const toolFrame = document.getElementById('toolFrame');
 const welcomeView = document.getElementById('welcomeView');
 const previewView = document.getElementById('previewView');
@@ -302,24 +285,20 @@ return `
 function renderTools(filter=''){
 const term = filter.toLowerCase();
 Object.values(groups).forEach(g=>g.innerHTML='');
-welcomeGrid.innerHTML='';
 let visibleCount=0;
 tools.forEach(tool=>{
 if(term && !(tool.name.toLowerCase().includes(term) || tool.desc.toLowerCase().includes(term) || tool.badge.toLowerCase().includes(term))) return;
 const btnHtml = createToolButton(tool,false);
-const cardHtml = createToolButton(tool,true);
 const groupEl = groups[tool.category];
 if(groupEl){
 const temp = document.createElement('div');
 temp.innerHTML=btnHtml.trim();
 groupEl.appendChild(temp.firstChild);
 }
-const temp2 = document.createElement('div');
-temp2.innerHTML=cardHtml.trim();
-welcomeGrid.appendChild(temp2.firstChild);
 visibleCount++;
 });
 attachToolEvents();
+// Preview stays empty - no cards rendered in main area
 }
 
 function attachToolEvents(){
